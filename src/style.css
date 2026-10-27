@@ -2098,31 +2098,12 @@ a {
 }
 
 
-/* --- MULTI-PAGE SYSTEM & CINEMATIC TRANSITIONS --- */
-.cinematic-flip-overlay {
-  position: fixed;
-  z-index: 99999;
-  pointer-events: none;
-  will-change: top, left, width, height, border-radius, opacity;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-}
-
+/* --- MULTI-PAGE SYSTEM & RASAS PAGE TRANSITIONS --- */
 .subpage-container {
   min-height: 100vh;
   position: relative;
   z-index: 10;
-  animation: subpageReveal 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes subpageReveal {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  will-change: opacity, transform;
 }
 
 .subpage-nav-bar {
@@ -2216,9 +2197,6 @@ a {
   }
   .subpage-container {
     animation: none !important;
-  }
-  .cinematic-flip-overlay {
-    display: none !important;
   }
 }
 

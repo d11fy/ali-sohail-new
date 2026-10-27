@@ -21,8 +21,9 @@ import {
   siSupabase,
   siTypescript,
 } from "simple-icons";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { TransitionProvider, usePageNavigation } from "./transitions/usePageNavigation";
 import SplitText from "./component/SplitText";
 import ClickSpark from "./component/ClickSpark";
 import DecryptedText from "./component/DecryptedText";
@@ -1057,21 +1058,12 @@ function ContactSection({
   );
 }
 
-function App() {
-  const [currentRoute, setCurrentRoute] = useState<string>(() => {
-    if (typeof window !== "undefined") {
-      const p = window.location.pathname.replace(/\/$/, "") || "/";
-      if (["/process", "/projects", "/about", "/contact"].includes(p)) {
-        return p;
-      }
-    }
-    return "/";
-  });
+function PortfolioApp() {
+  const { currentRoute, navigate } = usePageNavigation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [wavesFailed, setWavesFailed] = useState(false);
   const [filter, setFilter] = useState("الكل");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const homeScrollYRef = useRef<number>(0);
 
   useMotion();
   usePointerDepth();
@@ -1084,10 +1076,11 @@ function App() {
   const goTo = (id: string) => {
     setMenuOpen(false);
     if (currentRoute !== "/") {
-      navigateBackToHome();
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-      }, 350);
+      navigate("/").then(() => {
+        setTimeout(() => {
+          document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        }, 60);
+      });
     } else {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     }
@@ -1102,228 +1095,6 @@ function App() {
     window.location.href = `mailto:${details.email}?subject=${subject}&body=${body}`;
   };
 
-  const navigateWithTransition = (
-    to: string,
-    sourceEl?: HTMLElement | null,
-    themeType: "tools" | "folder" = "folder",
-  ) => {
-    setMenuOpen(false);
-    if (to === currentRoute) return;
-
-    if (currentRoute === "/") {
-      homeScrollYRef.current = window.scrollY;
-    }
-
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (prefersReduced || !sourceEl) {
-      window.history.pushState(null, "", to);
-      setCurrentRoute(to);
-      window.scrollTo({ top: 0, behavior: "instant" });
-      return;
-    }
-
-    const rect = sourceEl.getBoundingClientRect();
-    const overlay = document.createElement("div");
-    overlay.className = "cinematic-flip-overlay";
-
-    if (themeType === "tools") {
-      overlay.style.background =
-        "radial-gradient(circle at 45% -20%, #365862, #151b1b 58%, #090d0d)";
-    } else {
-      overlay.style.background =
-        "linear-gradient(155deg, #fbfcfb, #eaf1f0 55%, #d7e0df)";
-    }
-
-    overlay.style.position = "fixed";
-    overlay.style.top = `${rect.top}px`;
-    overlay.style.left = `${rect.left}px`;
-    overlay.style.width = `${rect.width}px`;
-    overlay.style.height = `${rect.height}px`;
-    overlay.style.borderRadius = "20px";
-    overlay.style.zIndex = "99999";
-    overlay.style.pointerEvents = "none";
-    overlay.style.boxShadow = "0 30px 80px rgba(0,0,0,0.45)";
-    overlay.style.overflow = "hidden";
-
-    document.body.appendChild(overlay);
-
-    gsap
-      .timeline({
-        onComplete: () => {
-          overlay.remove();
-        },
-      })
-      .to(
-        sourceEl,
-        {
-          scale: 0.98,
-          opacity: 0.88,
-          duration: 0.18,
-          ease: "power2.out",
-        },
-        0,
-      )
-      .to(
-        overlay,
-        {
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          borderRadius: 0,
-          duration: 0.52,
-          ease: "expo.inOut",
-          onStart: () => {
-            setTimeout(() => {
-              window.history.pushState(null, "", to);
-              setCurrentRoute(to);
-              window.scrollTo({ top: 0, behavior: "instant" });
-              gsap.set(sourceEl, { scale: 1, opacity: 1 });
-            }, 260);
-          },
-        },
-        0,
-      )
-      .to(overlay, {
-        opacity: 0,
-        duration: 0.35,
-        ease: "power2.out",
-        delay: 0.05,
-      });
-  };
-
-  const navigateDirect = (to: string) => {
-    setMenuOpen(false);
-    if (to === currentRoute) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    if (currentRoute === "/") {
-      homeScrollYRef.current = window.scrollY;
-    }
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      window.history.pushState(null, "", to);
-      setCurrentRoute(to);
-      window.scrollTo({ top: 0, behavior: "instant" });
-      return;
-    }
-
-    const currentContainer =
-      document.querySelector(".subpage-container") || document.querySelector("main");
-    if (currentContainer) {
-      gsap.to(currentContainer, {
-        opacity: 0,
-        y: -15,
-        duration: 0.22,
-        ease: "power2.in",
-        onComplete: () => {
-          window.history.pushState(null, "", to);
-          setCurrentRoute(to);
-          window.scrollTo({ top: 0, behavior: "instant" });
-          setTimeout(() => {
-            const nextContainer =
-              document.querySelector(".subpage-container") ||
-              document.querySelector("main");
-            if (nextContainer) {
-              gsap.fromTo(
-                nextContainer,
-                { opacity: 0, y: 15 },
-                { opacity: 1, y: 0, duration: 0.38, ease: "power2.out" },
-              );
-            }
-          }, 10);
-        },
-      });
-    } else {
-      window.history.pushState(null, "", to);
-      setCurrentRoute(to);
-      window.scrollTo({ top: 0, behavior: "instant" });
-    }
-  };
-
-  const navigateBackToHome = () => {
-    setMenuOpen(false);
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      window.history.pushState(null, "", "/");
-      setCurrentRoute("/");
-      window.scrollTo({ top: homeScrollYRef.current || 0, behavior: "instant" });
-      return;
-    }
-
-    const subpage = document.querySelector(".subpage-container");
-    if (subpage) {
-      gsap.to(subpage, {
-        opacity: 0,
-        y: -20,
-        duration: 0.26,
-        ease: "power2.in",
-        onComplete: () => {
-          window.history.pushState(null, "", "/");
-          setCurrentRoute("/");
-          setTimeout(() => {
-            window.scrollTo({ top: homeScrollYRef.current || 0, behavior: "instant" });
-            const main = document.querySelector("main");
-            if (main) {
-              gsap.fromTo(
-                main,
-                { opacity: 0 },
-                { opacity: 1, duration: 0.35, ease: "power2.out" },
-              );
-            }
-          }, 10);
-        },
-      });
-    } else {
-      window.history.pushState(null, "", "/");
-      setCurrentRoute("/");
-      window.scrollTo({ top: homeScrollYRef.current || 0, behavior: "instant" });
-    }
-  };
-
-  useEffect(() => {
-    const onPop = () => {
-      const p = window.location.pathname.replace(/\/$/, "") || "/";
-      const valid = ["/process", "/projects", "/about", "/contact"].includes(p) ? p : "/";
-      setCurrentRoute(valid);
-      if (valid === "/") {
-        setTimeout(() => {
-          window.scrollTo({ top: homeScrollYRef.current || 0, behavior: "instant" });
-        }, 10);
-      } else {
-        window.scrollTo({ top: 0, behavior: "instant" });
-      }
-    };
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
-
-  useEffect(() => {
-    switch (currentRoute) {
-      case "/process":
-        document.title = "من الفكرة للكود | الأدوات والتقنيات — علي سهيل الكحلوت";
-        break;
-      case "/projects":
-        document.title = "المشاريع والأعمال الرقمية — علي سهيل الكحلوت";
-        break;
-      case "/about":
-        document.title = "من غزة إلى العالم | عنّي — علي سهيل الكحلوت";
-        break;
-      case "/contact":
-        document.title = "عندك فكرة؟ | تواصل معي — علي سهيل الكحلوت";
-        break;
-      case "/":
-      default:
-        document.title = "علي سهيل الكحلوت — Full-Stack & AI";
-        break;
-    }
-    setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 120);
-  }, [currentRoute]);
-
   return (
     <ClickSpark sparkColor="#38bdf8" sparkCount={8} sparkRadius={24} duration={450}>
       <nav className="floating-dock" aria-label="التنقل الرئيسي">
@@ -1332,9 +1103,9 @@ function App() {
             className={`dock-lang ${currentRoute === "/" ? "active" : ""}`}
             onClick={() => {
               if (currentRoute === "/") {
-                goTo("home");
+                window.scrollTo({ top: 0, behavior: "smooth" });
               } else {
-                navigateBackToHome();
+                navigate("/");
               }
             }}
             aria-label="الرئيسية"
@@ -1346,7 +1117,7 @@ function App() {
         <Magnet padding={35} magnetStrength={2.2}>
           <button
             className={`dock-app dock-green ${currentRoute === "/contact" ? "active" : ""}`}
-            onClick={() => navigateDirect("/contact")}
+            onClick={() => navigate("/contact")}
             aria-label="تواصل"
           >
             ✉
@@ -1355,7 +1126,7 @@ function App() {
         <Magnet padding={35} magnetStrength={2.2}>
           <button
             className={`dock-app dock-coral ${currentRoute === "/about" ? "active" : ""}`}
-            onClick={() => navigateDirect("/about")}
+            onClick={() => navigate("/about")}
             aria-label="عني"
           >
             ✳
@@ -1364,7 +1135,7 @@ function App() {
         <Magnet padding={35} magnetStrength={2.2}>
           <button
             className={`dock-app dock-orange ${currentRoute === "/projects" ? "active" : ""}`}
-            onClick={() => navigateDirect("/projects")}
+            onClick={() => navigate("/projects")}
             aria-label="الأعمال"
           >
             ↗
@@ -1398,7 +1169,7 @@ function App() {
         <button
           onClick={() => {
             setMenuOpen(false);
-            navigateBackToHome();
+            navigate("/");
           }}
         >
           الرئيسية <span>01</span>
@@ -1406,7 +1177,7 @@ function App() {
         <button
           onClick={() => {
             setMenuOpen(false);
-            navigateDirect("/about");
+            navigate("/about");
           }}
         >
           عنّي <span>02</span>
@@ -1414,7 +1185,7 @@ function App() {
         <button
           onClick={() => {
             setMenuOpen(false);
-            navigateDirect("/process");
+            navigate("/process");
           }}
         >
           من الفكرة للكود (الأدوات) <span>03</span>
@@ -1422,7 +1193,7 @@ function App() {
         <button
           onClick={() => {
             setMenuOpen(false);
-            navigateDirect("/projects");
+            navigate("/projects");
           }}
         >
           المشاريع <span>04</span>
@@ -1430,7 +1201,7 @@ function App() {
         <button
           onClick={() => {
             setMenuOpen(false);
-            navigateDirect("/contact");
+            navigate("/contact");
           }}
         >
           تواصل <span>05</span>
@@ -1478,12 +1249,7 @@ function App() {
               <Magnet padding={40} magnetStrength={2.6}>
                 <button
                   className="hero-scroll"
-                  onClick={() => {
-                    const el = document.querySelectorAll<HTMLElement>(
-                      ".entry-card-folder",
-                    )[1];
-                    navigateWithTransition("/about", el, "folder");
-                  }}
+                  onClick={() => navigate("/about")}
                 >
                   اكتشف أكثر <ArrowDown size={15} />
                 </button>
@@ -1493,9 +1259,7 @@ function App() {
               {/* البطاقة الأولى: من الفكرة للكود -> /process */}
               <button
                 className="entry-card entry-tools"
-                onClick={(e) =>
-                  navigateWithTransition("/process", e.currentTarget, "tools")
-                }
+                onClick={() => navigate("/process")}
               >
                 <div className="entry-icons">
                   {technologies.slice(0, 4).map((item) => (
@@ -1510,15 +1274,10 @@ function App() {
               {/* المجلد الأول: المشاريع -> /projects */}
               <div
                 className="entry-card-folder"
-                onClick={(e) =>
-                  navigateWithTransition("/projects", e.currentTarget, "folder")
-                }
+                onClick={() => navigate("/projects")}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) =>
-                  e.key === "Enter" &&
-                  navigateWithTransition("/projects", e.currentTarget, "folder")
-                }
+                onKeyDown={(e) => e.key === "Enter" && navigate("/projects")}
               >
                 <div className="entry-folder-header">
                   <span className="entry-badge">01 / 12</span>
@@ -1538,12 +1297,7 @@ function App() {
                       size={0.88}
                       openOn="hover"
                       items={projectFolderItems}
-                      onItemClick={() => {
-                        const el = document.querySelectorAll<HTMLElement>(
-                          ".entry-card-folder",
-                        )[0];
-                        navigateWithTransition("/projects", el, "folder");
-                      }}
+                      onItemClick={() => navigate("/projects")}
                     />
                   </Suspense>
                 </div>
@@ -1556,15 +1310,10 @@ function App() {
               {/* المجلد الثاني: أبني حلولًا -> /about */}
               <div
                 className="entry-card-folder"
-                onClick={(e) =>
-                  navigateWithTransition("/about", e.currentTarget, "folder")
-                }
+                onClick={() => navigate("/about")}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) =>
-                  e.key === "Enter" &&
-                  navigateWithTransition("/about", e.currentTarget, "folder")
-                }
+                onKeyDown={(e) => e.key === "Enter" && navigate("/about")}
               >
                 <div className="entry-folder-header">
                   <span className="entry-badge">FULL-STACK × AI</span>
@@ -1584,12 +1333,7 @@ function App() {
                       size={0.88}
                       openOn="hover"
                       items={solutionFolderItems}
-                      onItemClick={() => {
-                        const el = document.querySelectorAll<HTMLElement>(
-                          ".entry-card-folder",
-                        )[1];
-                        navigateWithTransition("/about", el, "folder");
-                      }}
+                      onItemClick={() => navigate("/about")}
                     />
                   </Suspense>
                 </div>
@@ -1602,15 +1346,10 @@ function App() {
               {/* المجلد الثالث: عندك فكرة؟ -> /contact */}
               <div
                 className="entry-card-folder"
-                onClick={(e) =>
-                  navigateWithTransition("/contact", e.currentTarget, "folder")
-                }
+                onClick={() => navigate("/contact")}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) =>
-                  e.key === "Enter" &&
-                  navigateWithTransition("/contact", e.currentTarget, "folder")
-                }
+                onKeyDown={(e) => e.key === "Enter" && navigate("/contact")}
               >
                 <div className="entry-folder-header">
                   <span className="entry-badge">HELLO@ALI</span>
@@ -1630,12 +1369,7 @@ function App() {
                       size={0.88}
                       openOn="hover"
                       items={contactFolderItems}
-                      onItemClick={() => {
-                        const el = document.querySelectorAll<HTMLElement>(
-                          ".entry-card-folder",
-                        )[2];
-                        navigateWithTransition("/contact", el, "folder");
-                      }}
+                      onItemClick={() => navigate("/contact")}
                     />
                   </Suspense>
                 </div>
@@ -1652,7 +1386,7 @@ function App() {
           <ProjectsSection
             filter={filter}
             setFilter={setFilter}
-            onNavigateContact={() => navigateDirect("/contact")}
+            onNavigateContact={() => navigate("/contact")}
           />
           <ContactSection
             form={form}
@@ -1668,7 +1402,7 @@ function App() {
               <div className="subpage-nav-bar">
                 <button
                   className="subpage-back-link"
-                  onClick={navigateBackToHome}
+                  onClick={() => navigate("/")}
                 >
                   <ArrowLeft size={16} /> العودة للرئيسية
                 </button>
@@ -1678,7 +1412,7 @@ function App() {
               <div className="subpage-bottom-actions">
                 <button
                   className="subpage-back-pill"
-                  onClick={navigateBackToHome}
+                  onClick={() => navigate("/")}
                 >
                   <ArrowLeft size={16} /> العودة للصفحة الرئيسية
                 </button>
@@ -1691,7 +1425,7 @@ function App() {
               <div className="subpage-nav-bar">
                 <button
                   className="subpage-back-link"
-                  onClick={navigateBackToHome}
+                  onClick={() => navigate("/")}
                 >
                   <ArrowLeft size={16} /> العودة للرئيسية
                 </button>
@@ -1701,7 +1435,7 @@ function App() {
               <div className="subpage-bottom-actions">
                 <button
                   className="subpage-back-pill"
-                  onClick={navigateBackToHome}
+                  onClick={() => navigate("/")}
                 >
                   <ArrowLeft size={16} /> العودة للصفحة الرئيسية
                 </button>
@@ -1714,7 +1448,7 @@ function App() {
               <div className="subpage-nav-bar">
                 <button
                   className="subpage-back-link"
-                  onClick={navigateBackToHome}
+                  onClick={() => navigate("/")}
                 >
                   <ArrowLeft size={16} /> العودة للرئيسية
                 </button>
@@ -1723,12 +1457,12 @@ function App() {
               <ProjectsSection
                 filter={filter}
                 setFilter={setFilter}
-                onNavigateContact={() => navigateDirect("/contact")}
+                onNavigateContact={() => navigate("/contact")}
               />
               <div className="subpage-bottom-actions">
                 <button
                   className="subpage-back-pill"
-                  onClick={navigateBackToHome}
+                  onClick={() => navigate("/")}
                 >
                   <ArrowLeft size={16} /> العودة للصفحة الرئيسية
                 </button>
@@ -1741,7 +1475,7 @@ function App() {
               <div className="subpage-nav-bar">
                 <button
                   className="subpage-back-link"
-                  onClick={navigateBackToHome}
+                  onClick={() => navigate("/")}
                 >
                   <ArrowLeft size={16} /> العودة للرئيسية
                 </button>
@@ -1751,12 +1485,12 @@ function App() {
                 form={form}
                 setForm={setForm}
                 sendEmail={sendEmail}
-                onHome={navigateBackToHome}
+                onHome={() => navigate("/")}
               />
               <div className="subpage-bottom-actions">
                 <button
                   className="subpage-back-pill"
-                  onClick={navigateBackToHome}
+                  onClick={() => navigate("/")}
                 >
                   <ArrowLeft size={16} /> العودة للصفحة الرئيسية
                 </button>
@@ -1769,4 +1503,10 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <TransitionProvider>
+      <PortfolioApp />
+    </TransitionProvider>
+  );
+}
