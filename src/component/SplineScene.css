@@ -1,0 +1,122 @@
+.spline-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, #151d2a 0%, #090e17 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spline-canvas-view {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  outline: none;
+}
+
+.spline-loader-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(10, 15, 25, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 5;
+  color: #fff;
+  direction: rtl;
+}
+
+.spline-pulsar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.spline-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(56, 189, 248, 0.2);
+  border-top-color: #38bdf8;
+  border-radius: 50%;
+  animation: splineSpin 1s linear infinite;
+}
+
+.spline-ring-inner {
+  position: absolute;
+  inset: 8px;
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  border-bottom-color: #10b981;
+  border-radius: 50%;
+  animation: splineSpinRev 1.4s linear infinite;
+}
+
+@keyframes splineSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes splineSpinRev {
+  to { transform: rotate(-360deg); }
+}
+
+.spline-loader-text {
+  font-family: "Alexandria", "Cairo", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.spline-loader-sub {
+  font-family: "Space Mono", monospace, sans-serif;
+  font-size: 10px;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.spline-hint-badge {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #cbd5e1;
+  direction: rtl;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.spline-hint-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.spline-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.spline-fallback-icon {
+  font-size: 32px;
+  color: #38bdf8;
+}
