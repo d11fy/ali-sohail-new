@@ -49,8 +49,8 @@ const details = {
   role: "Full-Stack Engineer & AI Solutions Architect",
   location: "غزة، فلسطين 🇵🇸",
   email: "shylmm086@gmail.com",
-  phone: "+972 59 741 0422",
-  whatsappUrl: "https://wa.me/972597410422?text=" + encodeURIComponent("مرحباً علي، أرغب في مناقشة مشروع برمجي جديد معك."),
+  phone: "+972 56 750 8786",
+  whatsappUrl: "https://wa.me/972567508786?text=" + encodeURIComponent("مرحباً علي، أرغب في مناقشة مشروع برمجي جديد معك."),
   github: "https://github.com/d11fy",
   instagram: "https://instagram.com/d11fy",
 };
