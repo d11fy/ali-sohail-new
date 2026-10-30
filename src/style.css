@@ -1712,6 +1712,28 @@ input, textarea {
   box-shadow: 0 0 20px rgba(255, 80, 60, 0.25);
 }
 
+.finance-fullpage-section {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  padding: 120px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 80, 60, 0.08), transparent 70%);
+}
+
+.finance-fullpage-inner {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
 .finance-bento-stage {
   width: 100%;
   border-radius: 28px;
@@ -1719,6 +1741,16 @@ input, textarea {
   background: var(--color-bg);
   border: 1px solid var(--border-medium);
   box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.8);
+}
+
+.finance-bento-stage.full-page {
+  box-shadow: 0 30px 90px -20px rgba(0, 0, 0, 0.95), 0 0 50px rgba(255, 80, 60, 0.14);
+  transition: all 0.4s ease;
+}
+
+.finance-bento-stage.full-page:hover {
+  border-color: rgba(255, 80, 60, 0.4);
+  box-shadow: 0 35px 100px -20px rgba(0, 0, 0, 0.98), 0 0 65px rgba(255, 80, 60, 0.2);
 }
 
 .tunnel-hero-stage {

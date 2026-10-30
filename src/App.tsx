@@ -718,14 +718,44 @@ function ProjectsShowcaseSection() {
   );
 }
 
-function InnovationLabSection({ onNavigateContact }: { onNavigateContact: () => void }) {
-  const [labTab, setLabTab] = useState<"bento" | "spline">("bento");
+function FinanceBentoSection() {
+  return (
+    <section className="finance-fullpage-section" id="finance-bento">
+      <div className="finance-fullpage-inner">
+        <div className="section-header">
+          <div className="section-kicker">
+            <span>03</span> / أنظمة SaaS والبيانات المالية
+          </div>
+          <h2 className="section-title">
+            لوحة بيانات مالية تفاعلية فائقة السرعة بـ 60fps.
+          </h2>
+          <p className="section-subtitle">
+            هندسة واجهات SaaS مالية متكاملة تدمج الرسوم البيانية اللحظية، محاكاة حركة السيولة النقدية، وتوزيع المحافظ الرقمية والأصول بدقة متناهية.
+          </p>
+        </div>
 
+        <div className="finance-bento-stage full-page">
+          <Suspense
+            fallback={
+              <div style={{ display: "grid", placeItems: "center", minHeight: "500px", color: "var(--color-primary)" }}>
+                <span>جاري تحميل لوحة البيانات المالية التفاعلية...</span>
+              </div>
+            }
+          >
+            <FinanceBentoDemo />
+          </Suspense>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InnovationLabSection({ onNavigateContact }: { onNavigateContact: () => void }) {
   return (
     <section className="section-wrapper" id="lab">
       <div className="section-header">
         <div className="section-kicker">
-          <span>03</span> / مختبر 3D & AI
+          <span>04</span> / مختبر 3D & AI
         </div>
         <h2 className="section-title">
           مختبر الواجهات الذكية والـ WebGL.
@@ -735,87 +765,53 @@ function InnovationLabSection({ onNavigateContact }: { onNavigateContact: () => 
         </p>
       </div>
 
-      {/* Lab Showcase Tab Switcher */}
-      <div className="lab-tab-switcher">
-        <button
-          className={`lab-tab-btn ${labTab === "bento" ? "active" : ""}`}
-          onClick={() => setLabTab("bento")}
-        >
-          <Sparkles size={16} />
-          <span>لوحة بينتو المالية التفاعلية (Finance Bento)</span>
-        </button>
-        <button
-          className={`lab-tab-btn ${labTab === "spline" ? "active" : ""}`}
-          onClick={() => setLabTab("spline")}
-        >
-          <Bot size={16} />
-          <span>مجسم الروبوت 3D (Spline)</span>
-        </button>
-      </div>
+      <div className="lab-card-wrapper">
+        <div className="lab-meta">
+          <span className="bento-tag">WEBGL & INTELLIGENCE LAB</span>
+          <h3 className="lab-title">
+            تجارب بصرية تفاعلية تفوق التوقعات.
+          </h3>
+          <p className="lab-desc">
+            أستخدم تقنيات مثل Spline و Three.js و Matter.js لبناء عناصر ومحاكاة ثلاثية الأبعاد
+            تتفاعل مع حركة المؤشر ولمسات المستخدم وتمنح تطبيقك طابعاً مستقبلياً رفيع المستوى.
+          </p>
 
-      {labTab === "bento" && (
-        <div className="finance-bento-stage">
+          <div className="lab-specs-grid">
+            <div className="lab-spec-box">
+              <h5><Zap size={15} color="var(--color-primary)" /> سرعة أداء 60fps</h5>
+              <p>استهلاك منخفض لموارد المعالج وتوافق مع الهواتف.</p>
+            </div>
+            <div className="lab-spec-box">
+              <h5><Bot size={15} color="var(--color-primary-hover)" /> أتمتة AI مدمجة</h5>
+              <p>تكامل مباشر مع روبوتات ووكلاء الـ AI الذاتية.</p>
+            </div>
+          </div>
+
+          <div>
+            <Magnet padding={30} magnetStrength={2}>
+              <button onClick={onNavigateContact} className="btn-primary">
+                <span>اطلب تجربة 3D لمشروعك</span>
+                <ArrowUpLeft size={18} />
+              </button>
+            </Magnet>
+          </div>
+        </div>
+
+        <div className="lab-3d-stage">
           <Suspense
             fallback={
-              <div style={{ display: "grid", placeItems: "center", minHeight: "400px", color: "#64748b" }}>
-                <span>جاري تحميل لوحة البيانات المالية التفاعلية...</span>
+              <div style={{ display: "grid", placeItems: "center", height: "100%", color: "#64748b" }}>
+                <span>جاري تحميل المشهد ثلاثي الأبعاد...</span>
               </div>
             }
           >
-            <FinanceBentoDemo />
+            <SplineScene
+              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+              hintText=""
+            />
           </Suspense>
         </div>
-      )}
-
-      {labTab === "spline" && (
-        <div className="lab-card-wrapper">
-          <div className="lab-meta">
-            <span className="bento-tag">WEBGL & INTELLIGENCE LAB</span>
-            <h3 className="lab-title">
-              تجارب بصرية تفاعلية تفوق التوقعات.
-            </h3>
-            <p className="lab-desc">
-              أستخدم تقنيات مثل Spline و Three.js و Matter.js لبناء عناصر ومحاكاة ثلاثية الأبعاد
-              تتفاعل مع حركة المؤشر ولمسات المستخدم وتمنح تطبيقك طابعاً مستقبلياً رفيع المستوى.
-            </p>
-
-            <div className="lab-specs-grid">
-              <div className="lab-spec-box">
-                <h5><Zap size={15} color="var(--color-primary)" /> سرعة أداء 60fps</h5>
-                <p>استهلاك منخفض لموارد المعالج وتوافق مع الهواتف.</p>
-              </div>
-              <div className="lab-spec-box">
-                <h5><Bot size={15} color="var(--color-primary-hover)" /> أتمتة AI مدمجة</h5>
-                <p>تكامل مباشر مع روبوتات ووكلاء الـ AI الذاتية.</p>
-              </div>
-            </div>
-
-            <div>
-              <Magnet padding={30} magnetStrength={2}>
-                <button onClick={onNavigateContact} className="btn-primary">
-                  <span>اطلب تجربة 3D لمشروعك</span>
-                  <ArrowUpLeft size={18} />
-                </button>
-              </Magnet>
-            </div>
-          </div>
-
-          <div className="lab-3d-stage">
-            <Suspense
-              fallback={
-                <div style={{ display: "grid", placeItems: "center", height: "100%", color: "#64748b" }}>
-                  <span>جاري تحميل المشهد ثلاثي الأبعاد...</span>
-                </div>
-              }
-            >
-              <SplineScene
-                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                hintText=""
-              />
-            </Suspense>
-          </div>
-        </div>
-      )}
+      </div>
     </section>
   );
 }
@@ -836,7 +832,7 @@ function ContactSection() {
     <section className="section-wrapper" id="contact">
       <div className="section-header">
         <div className="section-kicker">
-          <span>04</span> / تواصل معي
+          <span>05</span> / تواصل معي
         </div>
         <h2 className="section-title">
           عندك فكرة أو مشروع؟ دعنا نحولها لكود وواقع.
@@ -1102,6 +1098,7 @@ function PortfolioApp() {
           </Suspense>
           <BentoAboutSection />
           <ProjectsShowcaseSection />
+          <FinanceBentoSection />
           <InnovationLabSection onNavigateContact={() => scrollToSection("contact")} />
           <ContactSection />
           <SiteFooter />

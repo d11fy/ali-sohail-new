@@ -53,19 +53,20 @@ const data = {
   stocks: { days: ["Mon", "Tue", "Wed", "Thu", "Fri"], values: [2.1, 1.2, 3.4, 1.9, 4.6] },
 };
 
-const AVATAR = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120&q=80";
+const AVATAR = "/assets/ali-official.jpg";
 
 export default function FinanceBentoDemo() {
   useFonts();
   return (
-    <div className="min-h-screen w-full bg-black px-4 py-6 sm:px-6 sm:py-8">
+    <div className="w-full bg-transparent px-2 sm:px-4 py-4 sm:py-6">
       <FinanceBento
-        className="mx-auto max-w-[1320px]"
+        className="mx-auto w-full max-w-[1360px]"
         data={data}
         title="Overview"
         subtitle="Updated today, 09:41"
         avatar={AVATAR}
-        avatarAlt="Roman Vasnev"
+        avatarAlt="Ali Sohail"
+        credit={false}
       />
     </div>
   );
