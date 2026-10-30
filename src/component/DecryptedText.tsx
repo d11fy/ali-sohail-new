@@ -169,7 +169,7 @@ export default function DecryptedText({
               className={isRevealed ? undefined : (encryptedClassName || 'encrypted-char')}
               style={{
                 transition: 'color 0.15s ease',
-                color: isRevealed ? undefined : '#38bdf8'
+                color: isRevealed ? undefined : '#FF503C'
               }}
             >
               {char}

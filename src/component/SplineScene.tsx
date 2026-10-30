@@ -13,7 +13,7 @@ export default function SplineScene({
   scene,
   className = '',
   onLoad,
-  hintText = 'اسحب وحرّك الماوس للتفاعل المباشر في الفضاء ثلاثي الأبعاد 3D'
+  hintText = ''
 }: SplineSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(true);

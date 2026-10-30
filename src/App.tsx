@@ -1,17 +1,22 @@
 import {
   ArrowDown,
-  ArrowDownLeft,
   ArrowLeft,
   ArrowUpLeft,
-  Folder,
+  Bot,
+  Briefcase,
+  CheckCircle2,
   Github,
   Instagram,
+  Mail,
   Menu,
+  MessageCircle,
+  Send,
+  ShieldCheck,
   Sparkles,
+  Terminal,
   X,
+  Zap,
 } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   siFigma,
   siFlutter,
@@ -24,585 +29,434 @@ import {
 import { lazy, Suspense, useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { TransitionProvider, usePageNavigation } from "./transitions/usePageNavigation";
-import SplitText from "./component/SplitText";
 import ClickSpark from "./component/ClickSpark";
 import DecryptedText from "./component/DecryptedText";
 import Magnet from "./component/Magnet";
 import SpotlightCard from "./component/SpotlightCard";
 
-const ShapeWaves = lazy(() => import("./component/ShapeWaves"));
-const ElasticMesh = lazy(() => import("./component/ElasticMesh"));
 const CardSwap = lazy(() => import("./component/CardSwap"));
-const FolderFloat = lazy(() => import("./component/FolderFloat"));
 const Lanyard = lazy(() => import("./component/Lanyard"));
-const FolderBox = lazy(() => import("./component/Folder"));
 const SplineScene = lazy(() => import("./component/SplineScene"));
+const FinanceBentoDemo = lazy(() => import("./components/ui/demo"));
+const PerspectiveTunnelHero = lazy(() => import("./components/ui/perspective-tunnel-hero"));
 import type { CardSwapItem } from "./component/CardSwap";
-import type { FolderItem } from "./component/Folder";
-
-const projectFolderItems: FolderItem[] = [
-  { title: "Alosh Store", description: "متجر متكامل بذكاء اصطناعي" },
-  { title: "WhatsApp CRM", description: "أتمتة مبيعات ذكية ومحادثات" },
-  { title: "ATHAR Platform", description: "منصة ويب بهوية وتصميم حديث" },
-  { title: "CoreX System", description: "أنظمة برمجية متطورة" }
-];
-
-const solutionFolderItems: FolderItem[] = [
-  { title: "Next.js & React 19", description: "واجهات فائقة السرعة والسلاسة" },
-  { title: "AI Integration", description: "نماذج ذكاء اصطناعي وأتمتة" },
-  { title: "من غزة للعالم", description: "برمجة وحلول رقمية بمعايير عالمية" }
-];
-
-const contactFolderItems: FolderItem[] = [
-  { title: "واتساب مباشر", description: "+972 59 741 0422" },
-  { title: "البريد الإلكتروني", description: "shylmm086@gmail.com" },
-  { title: "ابدأ مشروعك الآن", description: "مستعد لتحويل فكرتك لكود واقعي" }
-];
-
-gsap.registerPlugin(ScrollTrigger);
+import { LiquidNavbar, NimbusIcons } from "./components/ui/liquid-glass-navbar";
+import type { LiquidNavItem } from "./components/ui/liquid-glass-navbar";
+import { GlassFolder } from "./components/ui/glass-folder-cards";
 
 const details = {
   name: "علي سهيل الكحلوت",
+  role: "Full-Stack Engineer & AI Solutions Architect",
+  location: "غزة، فلسطين 🇵🇸",
   email: "shylmm086@gmail.com",
+  phone: "+972 59 741 0422",
+  whatsappUrl: "https://wa.me/972597410422?text=" + encodeURIComponent("مرحباً علي، أرغب في مناقشة مشروع برمجي جديد معك."),
   github: "https://github.com/d11fy",
   instagram: "https://instagram.com/d11fy",
 };
 
-type Project = {
+export type Project = {
   title: string;
   arabic: string;
-  type: string;
+  category: "ذكاء اصطناعي" | "أنظمة SaaS" | "تجارة رقمية" | "منصات تعليمية" | "مواقع وهوية";
   tag: string;
-  url?: string;
-  theme: string;
-  mark: string;
-  image?: string;
+  url: string;
+  image: string;
+  tech: string[];
+  description: string;
 };
 
-const projects: Project[] = [
+const allProjects: Project[] = [
   {
     title: "Alosh Store",
     arabic: "متجر المنتجات والاشتراكات الرقمية",
-    type: "تجارة رقمية",
-    tag: "E-COMMERCE",
+    category: "تجارة رقمية",
+    tag: "E-COMMERCE / SAAS",
     url: "https://aloshstore.com/",
-    theme: "amber",
-    mark: "A",
     image: "/assets/real-alosh-store.png",
+    tech: ["Next.js", "TypeScript", "Tailwind", "Payment Gateways"],
+    description: "منصة تجارة رقمية متكاملة لبيع الاشتراكات والمنتجات مع ربط بوابات الدفع والتسليم الفوري الآلي.",
   },
   {
     title: "AI WhatsApp CRM",
     arabic: "نظام ذكي لإدارة العملاء والمبيعات",
-    type: "ذكاء اصطناعي",
+    category: "ذكاء اصطناعي",
     tag: "AI / SAAS",
     url: "https://crm-ai-whatsapp22.vercel.app/",
-    theme: "mint",
-    mark: "AI",
     image: "/assets/real-whatsapp-crm.png",
+    tech: ["OpenAI API", "WhatsApp Business", "Next.js", "Supabase"],
+    description: "وكيل ذكاء اصطناعي مستقل يقوم بالرد الفوري على استفسارات العملاء، إتمام الطلبات، وتصنيف المحادثات آلياً.",
   },
   {
     title: "ATHAR",
-    arabic: "أثر للحلول الرقمية",
-    type: "مواقع",
+    arabic: "أثر للحلول الرقمية وتطوير الأعمال",
+    category: "مواقع وهوية",
     tag: "CORPORATE",
     url: "https://atherv1.vercel.app/ar",
-    theme: "lilac",
-    mark: "أثر",
     image: "/assets/real-athar.png",
+    tech: ["React", "Next.js", "GSAP Motion", "Tailwind"],
+    description: "منصة رقمية ذات هوية بصرية متميزة للشركات والمؤسسات، مصممة بأعلى معايير السرعة وسلاسة الحركة.",
   },
   {
     title: "CoreX",
-    arabic: "حلول برمجية وذكاء اصطناعي",
-    type: "مواقع",
-    tag: "AGENCY",
+    arabic: "حلول برمجية ونظم ذكاء اصطناعي",
+    category: "مواقع وهوية",
+    tag: "AGENCY / AI",
     url: "https://corex1-puce.vercel.app/ar",
-    theme: "blue",
-    mark: "X",
     image: "/assets/real-corex.png",
-  },
-  {
-    title: "Gaza Pathways",
-    arabic: "منصة تعليمية",
-    type: "منصات",
-    tag: "EDUCATION",
-    url: "https://masart.study/",
-    theme: "sky",
-    mark: "مسارات",
-    image: "/assets/real-masart.png",
-  },
-  {
-    title: "CoachPro",
-    arabic: "منصة لياقة رقمية",
-    type: "منصات",
-    tag: "FITNESS",
-    url: "https://bodybuilding-system.vercel.app/",
-    theme: "lime",
-    mark: "C",
-    image: "/assets/real-coachpro.png",
-  },
-  {
-    title: "CosmiBook",
-    arabic: "متجر منتجات رقمية",
-    type: "تجارة رقمية",
-    tag: "E-COMMERCE",
-    theme: "rose",
-    mark: "C",
-  },
-  {
-    title: "Digital Academy",
-    arabic: "أكاديمية رقمية",
-    type: "منصات",
-    tag: "EDUCATION",
-    url: "https://alosh.nzmly.com/",
-    theme: "sky",
-    mark: "D",
-    image: "/assets/real-digital-academy.png",
-  },
-  {
-    title: "Personal Branding",
-    arabic: "هوية شخصية رقمية",
-    type: "مواقع",
-    tag: "WEBSITE",
-    theme: "amber",
-    mark: "P",
+    tech: ["Next.js 15", "TypeScript", "3D WebGL", "Tailwind"],
+    description: "موقع تفاعلي حديث لوكالة حلول برمجية وذكاء اصطناعي يعكس المستقبل الرقمي مع تأثيرات حركية متطورة.",
   },
   {
     title: "CLICK STORE",
-    arabic: "سوق اشتراكات رقمية",
-    type: "تجارة رقمية",
+    arabic: "سوق الاشتراكات والبطاقات الرقمية",
+    category: "تجارة رقمية",
     tag: "MARKETPLACE",
     url: "https://clickstorev2.vercel.app/",
-    theme: "lilac",
-    mark: "CLICK",
     image: "/assets/real-clickstore.png",
+    tech: ["React", "Supabase", "REST API", "Tailwind"],
+    description: "سوق إلكتروني سريع لشراء وتوزيع البطاقات الرقمية والأكواد مع لوحة تحكم ذكية لإدارة البائعين والمخزون.",
   },
   {
     title: "SABA STORE",
-    arabic: "منصة لإنشاء المتاجر",
-    type: "منصات",
-    tag: "SAAS",
+    arabic: "منصة لإنشاء وإدارة المتاجر السحابية",
+    category: "أنظمة SaaS",
+    tag: "SAAS PLATFORM",
     url: "https://sub-store-platform.vercel.app/",
-    theme: "mint",
-    mark: "S",
     image: "/assets/real-saba-store.png",
+    tech: ["Multi-tenant", "Next.js", "PostgreSQL", "Tailwind"],
+    description: "نظام SaaS متقدم يمكّن التجار من إطلاق متاجرهم المستقلة في دقائق مع إدارة المخزون والمبيعات والفواتير.",
+  },
+  {
+    title: "CoachPro",
+    arabic: "منصة تدريب ولياقة رقمية متكاملة",
+    category: "أنظمة SaaS",
+    tag: "FITNESS SAAS",
+    url: "https://bodybuilding-system.vercel.app/",
+    image: "/assets/real-coachpro.png",
+    tech: ["Next.js", "Supabase Auth", "Chart.js", "Tailwind"],
+    description: "تطبيق ويب متكامل للمدربين والرياضيين لإدارة الجداول الغذائية والتدريبية ومتابعة التطور البدني بالأرقام.",
+  },
+  {
+    title: "Gaza Pathways",
+    arabic: "منصة مسارات للدراسة والتعليم التفاعلي",
+    category: "منصات تعليمية",
+    tag: "EDTECH",
+    url: "https://masart.study/",
+    image: "/assets/real-masart.png",
+    tech: ["Next.js", "Video Streaming", "Interactive LMS"],
+    description: "بيئة تعليمية ذكية تدعم آلاف الطلاب بمحتوى دراسي منظم، اختبارات تفاعلية، ولوحات تحصيل دراسي فورية.",
+  },
+  {
+    title: "Digital Academy",
+    arabic: "أكاديمية رقمية تفاعلية",
+    category: "منصات تعليمية",
+    tag: "EDUCATION",
+    url: "https://alosh.nzmly.com/",
+    image: "/assets/real-digital-academy.png",
+    tech: ["React", "LMS API", "Responsive UI"],
+    description: "أكاديمية تدريبية متخصصة في تأهيل الكفاءات وتطوير المهارات البرمجية والمهنية عبر مسارات تطبيقية.",
   },
   {
     title: "AI Builder",
     arabic: "برنامج تعلم البرمجة بالذكاء الاصطناعي",
-    type: "ذكاء اصطناعي",
-    tag: "EDUCATION / AI",
-    url: "https://ai-builder-gray.vercel.app/",
-    theme: "blue",
-    mark: "AI",
-    image: "/assets/real-ai-builder.png",
-  },
-];
-
-const featuredSwapItems: CardSwapItem[] = [
-  {
-    title: "Alosh Store",
-    subtitle: "متجر المنتجات والاشتراكات الرقمية",
-    tag: "E-COMMERCE",
-    image: "/assets/real-alosh-store.png",
-    url: "https://aloshstore.com/",
-    mark: "A",
-  },
-  {
-    title: "AI WhatsApp CRM",
-    subtitle: "نظام ذكي لإدارة العملاء والمبيعات",
-    tag: "AI / SAAS",
-    image: "/assets/real-whatsapp-crm.png",
-    url: "https://crm-ai-whatsapp22.vercel.app/",
-    mark: "WA",
-  },
-  {
-    title: "ATHAR",
-    subtitle: "أثر للحلول الرقمية وتطوير الأعمال",
-    tag: "CORPORATE",
-    image: "/assets/real-athar.png",
-    url: "https://atherv1.vercel.app/ar",
-    mark: "أثر",
-  },
-  {
-    title: "CoreX",
-    subtitle: "حلول برمجية ونظم ذكاء اصطناعي",
-    tag: "AGENCY / AI",
-    image: "/assets/real-corex.png",
-    url: "https://corex1-puce.vercel.app/ar",
-    mark: "X",
-  },
-  {
-    title: "CLICK STORE",
-    subtitle: "سوق الاشتراكات والبطاقات الرقمية",
-    tag: "MARKETPLACE",
-    image: "/assets/real-clickstore.png",
-    url: "https://clickstorev2.vercel.app/",
-    mark: "CLICK",
-  },
-  {
-    title: "SABA STORE",
-    subtitle: "منصة إنشاء وإدارة المتاجر الإلكترونية",
-    tag: "SAAS",
-    image: "/assets/real-saba-store.png",
-    url: "https://sub-store-platform.vercel.app/",
-    mark: "S",
-  },
-  {
-    title: "CoachPro",
-    subtitle: "منصة تدريب ولياقة رقمية متكاملة",
-    tag: "FITNESS SAAS",
-    image: "/assets/real-coachpro.png",
-    url: "https://bodybuilding-system.vercel.app/",
-    mark: "C",
-  },
-  {
-    title: "Gaza Pathways",
-    subtitle: "منصة مسارات للدراسة والتعليم الذكي",
-    tag: "EDUCATION",
-    image: "/assets/real-masart.png",
-    url: "https://masart.study/",
-    mark: "مسار",
-  },
-  {
-    title: "Digital Academy",
-    subtitle: "أكاديمية رقمية تفاعلية",
-    tag: "EDUCATION",
-    image: "/assets/real-digital-academy.png",
-    url: "https://alosh.nzmly.com/",
-    mark: "D",
-  },
-  {
-    title: "AI Builder",
-    subtitle: "برنامج تعلم البرمجة بالذكاء الاصطناعي",
+    category: "ذكاء اصطناعي",
     tag: "AI / EDUCATION",
-    image: "/assets/real-ai-builder.png",
     url: "https://ai-builder-gray.vercel.app/",
-    mark: "AI",
+    image: "/assets/real-ai-builder.png",
+    tech: ["OpenAI Code Gen", "Next.js", "Monaco Editor"],
+    description: "أداة تعليمية تفاعلية تمكن المبتدئين من إنشاء وبرمجة تطبيقاتهم عبر حوارات ذكية مع نماذج الذكاء الاصطناعي.",
   },
 ];
 
-type Tech = {
-  label: string;
-  icon: { path: string };
-  tone: string;
-  className?: string;
-};
-const technologies: Tech[] = [
-  { label: "Next.js", icon: siNextdotjs, tone: "black", className: "tech-one" },
-  { label: "React", icon: siReact, tone: "cyan", className: "tech-two" },
-  { label: "Figma", icon: siFigma, tone: "figma", className: "tech-three" },
-  {
-    label: "Supabase",
-    icon: siSupabase,
-    tone: "green",
-    className: "tech-four",
-  },
-  { label: "Flutter", icon: siFlutter, tone: "blue", className: "tech-five" },
-  { label: "GitHub", icon: siGithub, tone: "black", className: "tech-six" },
-  {
-    label: "TypeScript",
-    icon: siTypescript,
-    tone: "blue",
-    className: "tech-seven",
-  },
+const featuredSwapItems: CardSwapItem[] = allProjects.slice(0, 6).map((p) => ({
+  title: p.title,
+  subtitle: p.arabic,
+  tag: p.tag,
+  image: p.image,
+  url: p.url,
+  mark: p.title.slice(0, 2),
+}));
+
+const techStack = [
+  { name: "Next.js 15", icon: siNextdotjs, desc: "تطبيقات Full-Stack فائقة السرعة" },
+  { name: "React 19", icon: siReact, desc: "واجهات مستخدم تفاعلية وسلسة" },
+  { name: "TypeScript", icon: siTypescript, desc: "كود آمن وخالٍ من الأخطاء" },
+  { name: "Supabase", icon: siSupabase, desc: "قواعد بيانات وأمان لحظي" },
+  { name: "AI Automations", icon: null, lucide: Bot, desc: "OpenAI & وكلاء أذكياء" },
+  { name: "Flutter", icon: siFlutter, desc: "تطبيقات جوال مشتركة للأجهزة" },
+  { name: "Figma", icon: siFigma, desc: "تصميم واجهات وتجربة مستخدم" },
+  { name: "GitHub & CI/CD", icon: siGithub, desc: "إدارة مشاريع ونشر آلي" },
 ];
 
-function TechIcon({ item, mini = false }: { item: Tech; mini?: boolean }) {
+function FloatingDock({ currentRoute, navigate }: { currentRoute: string; navigate: (r: string) => void }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleNav = (route: string) => {
+    setMobileOpen(false);
+    navigate(route);
+  };
+
+  const navItems: LiquidNavItem[] = [
+    { label: "الرئيسية", icon: NimbusIcons.home, fx: "glow" },
+    { label: "عنّي", icon: NimbusIcons.user, fx: "wave" },
+    { label: "المشاريع", icon: NimbusIcons.globe, fx: "spin" },
+    { label: "الأدوات", icon: NimbusIcons.plane, fx: "plane" },
+    { label: "تواصل", icon: NimbusIcons.drop, fx: "drop" },
+  ];
+  const routes = ["/", "/about", "/projects", "/process", "/contact"];
+  const activeIndex = routes.indexOf(currentRoute) >= 0 ? routes.indexOf(currentRoute) : 0;
+
   return (
-    <div
-      className={`tech-icon tone-${item.tone} ${item.className ?? ""} ${mini ? "mini" : ""}`}
-      title={item.label}
-      aria-label={item.label}
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d={item.icon.path} />
-      </svg>
-    </div>
+    <>
+      <div className="floating-dock-wrapper">
+        <nav className="floating-dock" aria-label="التنقل الرئيسي">
+          <Magnet padding={20} magnetStrength={2}>
+            <button
+              className="dock-brand"
+              onClick={() => handleNav("/")}
+              aria-label="الرئيسية"
+            >
+              <span className="brand-dot" />
+              <span>AS / ALOSH</span>
+            </button>
+          </Magnet>
+
+          <div className="dock-nav-links" dir="ltr">
+            <LiquidNavbar
+              items={navItems}
+              active={activeIndex}
+              onChange={(index) => handleNav(routes[index])}
+              tone="dark"
+            />
+          </div>
+
+          <div className="dock-divider" />
+
+          <Magnet padding={20} magnetStrength={2}>
+            <a
+              href={details.whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="dock-whatsapp-btn"
+            >
+              <span className="dock-whatsapp-pulse" />
+              <MessageCircle size={15} />
+              <span>واتساب مباشر</span>
+            </a>
+          </Magnet>
+
+          <button
+            className="dock-menu-toggle"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="القائمة"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </nav>
+      </div>
+
+      <div className={`mobile-menu-screen ${mobileOpen ? "open" : ""}`}>
+        <button className={`mobile-nav-link ${currentRoute === "/" ? "active" : ""}`} onClick={() => handleNav("/")}>
+          الرئيسية <span>01</span>
+        </button>
+        <button className={`mobile-nav-link ${currentRoute === "/about" ? "active" : ""}`} onClick={() => handleNav("/about")}>
+          عنّي وتخصصاتي <span>02</span>
+        </button>
+        <button className={`mobile-nav-link ${currentRoute === "/projects" ? "active" : ""}`} onClick={() => handleNav("/projects")}>
+          المشاريع الرقمية <span>03</span>
+        </button>
+        <button className={`mobile-nav-link ${currentRoute === "/process" ? "active" : ""}`} onClick={() => handleNav("/process")}>
+          منهجية التطوير <span>04</span>
+        </button>
+        <button className={`mobile-nav-link ${currentRoute === "/contact" ? "active" : ""}`} onClick={() => handleNav("/contact")}>
+          تواصل معي <span>05</span>
+        </button>
+      </div>
+    </>
   );
 }
 
-function useMotion() {
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".hero-word",
-        { y: 55, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          stagger: 0.14,
-          duration: 1.1,
-          ease: "power3.out",
-          delay: 0.15,
-        },
-      );
-      gsap.fromTo(
-        ".hero-person",
-        { y: 80, opacity: 0, scale: 0.94 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1.35,
-          ease: "power3.out",
-          delay: 0.22,
-        },
-      );
-      gsap.fromTo(
-        ".entry-card",
-        { y: 90, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          stagger: 0.09,
-          duration: 1,
-          ease: "power3.out",
-          delay: 0.45,
-        },
-      );
-      gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((element) => {
-        gsap.fromTo(
-          element,
-          { y: 70, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: { trigger: element, start: "top 88%", once: true },
-          },
-        );
-      });
-      gsap.to(".hero-person", {
-        yPercent: 13,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-      gsap.to(".stretch-line", {
-        scaleX: 1.55,
-        transformOrigin: "50% 50%",
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".type-break",
-          start: "top 75%",
-          end: "bottom 30%",
-          scrub: true,
-        },
-      });
-    });
-    return () => ctx.revert();
-  }, []);
-}
+function HeroSection({ onExploreProjects }: { onExploreProjects: () => void }) {
+  const [copied, setCopied] = useState(false);
 
-function usePointerDepth() {
-  useEffect(() => {
-    const pointer = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (!pointer.matches || reducedMotion.matches) return;
-
-    const hero = document.querySelector<HTMLElement>(".hero");
-    const cards = gsap.utils.toArray<HTMLElement>(".entry-card");
-    if (!hero) return;
-
-    let frame = 0;
-    const moveHero = (event: PointerEvent) => {
-      cancelAnimationFrame(frame);
-      const { clientX, clientY } = event;
-      frame = requestAnimationFrame(() => {
-        const rect = hero.getBoundingClientRect();
-        const x = (clientX - rect.left) / rect.width - 0.5;
-        const y = (clientY - rect.top) / rect.height - 0.5;
-        hero.style.setProperty("--photo-x", `${(x * 22).toFixed(1)}px`);
-        hero.style.setProperty("--photo-y", `${(y * 14).toFixed(1)}px`);
-      });
-    };
-    const resetHero = () => {
-      cancelAnimationFrame(frame);
-      hero.style.setProperty("--photo-x", "0px");
-      hero.style.setProperty("--photo-y", "0px");
-    };
-    hero.addEventListener("pointermove", moveHero);
-    hero.addEventListener("pointerleave", resetHero);
-
-    const cleanups = cards.map((card) => {
-      gsap.set(card, { transformPerspective: 800, transformOrigin: "center" });
-      const rotateX = gsap.quickTo(card, "rotationX", {
-        duration: 0.45,
-        ease: "power3.out",
-      });
-      const rotateY = gsap.quickTo(card, "rotationY", {
-        duration: 0.45,
-        ease: "power3.out",
-      });
-      const move = (event: PointerEvent) => {
-        const rect = card.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width - 0.5;
-        const y = (event.clientY - rect.top) / rect.height - 0.5;
-        rotateX(-y * 9);
-        rotateY(x * 11);
-      };
-      const enter = () => gsap.to(card, { y: -7, duration: 0.35 });
-      const leave = () => {
-        rotateX(0);
-        rotateY(0);
-        gsap.to(card, { y: 0, duration: 0.45 });
-      };
-      card.addEventListener("pointermove", move);
-      card.addEventListener("pointerenter", enter);
-      card.addEventListener("pointerleave", leave);
-      return () => {
-        card.removeEventListener("pointermove", move);
-        card.removeEventListener("pointerenter", enter);
-        card.removeEventListener("pointerleave", leave);
-        gsap.killTweensOf(card);
-      };
-    });
-
-    return () => {
-      hero.removeEventListener("pointermove", moveHero);
-      hero.removeEventListener("pointerleave", resetHero);
-      cancelAnimationFrame(frame);
-      cleanups.forEach((cleanup) => cleanup());
-    };
-  }, []);
-}
-
-function AloshMesh() {
-  const [webgl, setWebgl] = useState(false);
-  useEffect(() => {
-    const canvas = document.createElement("canvas");
-    setWebgl(Boolean(canvas.getContext("webgl2")));
-  }, []);
+  const copyCommand = () => {
+    navigator.clipboard.writeText("npx alosh-portfolio");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className="name-mesh-shell">
-      {webgl ? (
-        <Suspense fallback={<span className="name-mesh-fallback">ALOSH</span>}>
-          <ElasticMesh
-            text="ALOSH"
-            fontFamily="Outfit, sans-serif"
-            fontWeight={900}
-            color="#247c61"
-            material="jelly"
-            theme="light"
-            inflate={1.15}
-            wobble={0.7}
-            stretch={0.55}
-            press={0.6}
-            shadow={0.35}
-            dpr={1.5}
-          />
-        </Suspense>
-      ) : (
-        <span className="name-mesh-fallback">ALOSH</span>
-      )}
-    </div>
-  );
-}
-
-function AboutSection() {
-  return (
-    <section className="white-story" id="about">
-      <div className="section-kicker" data-reveal>
-        <span>01</span> / عنّي
-      </div>
-      <div className="story-center">
-        <span className="story-small" data-reveal>أنا علي سهيل الكحلوت</span>
-        <h1>
-          <SplitText
-            text="أحوّل الأفكار"
-            tag="span"
-            splitType="words"
-            trigger="view"
-            effect="rise"
-            delay={150}
-            duration={0.9}
-            mask
-          />
-          <br />
-          <SplitText
-            text="لتجارب رقمية."
-            tag="span"
-            className="story-accent"
-            splitType="words"
-            trigger="view"
-            effect="rise"
-            delay={150}
-            duration={0.9}
-            mask
-          />
-        </h1>
-        <p data-reveal>
-          مطوّر Full-Stack من غزة، فلسطين. أعمل عند تقاطع البرمجة والذكاء
-          الاصطناعي والتجارة الرقمية لبناء منتجات مفيدة وقابلة للنمو.
-        </p>
-      </div>
-
-      {/* بطاقة الاعتماد البرمجي الرسمية مع الـ 3D Lanyard والصورة الرسمية لعلي */}
-      <div className="about-pass-container" data-reveal>
-        <div className="about-pass-card">
-          <div className="pass-meta">
-            <div className="pass-badge-pill">
-              <span className="pass-status-dot" />
-              <span>OFFICIAL DEV PASS • بطاقة الاعتماد البرمجي</span>
+    <section className="hero-wrapper" id="home">
+      <div className="hero-content">
+        <div className="hero-text-side">
+          <div className="hero-badge-row">
+            <div className="status-pill">
+              <span className="status-dot-pulse" />
+              <span>متاح للمشاريع الجديدة والتعاقد</span>
             </div>
-            <h3 className="pass-title">علي سهيل الكحلوت</h3>
-            <p className="pass-role">Full-Stack Engineer & AI Solutions Architect</p>
-
-            <div className="pass-specs">
-              <div className="pass-spec-item">
-                <span className="spec-label">الموقع الجغرافي</span>
-                <strong className="spec-val">غزة، فلسطين 🇵🇸</strong>
-              </div>
-              <div className="pass-spec-item">
-                <span className="spec-label">رمز الاعتماد</span>
-                <strong className="spec-val mono">
-                  <DecryptedText
-                    text="DEV-ALOSH-2026"
-                    speed={25}
-                    maxIterations={15}
-                    animateOn="hover"
-                  />
-                </strong>
-              </div>
-              <div className="pass-spec-item">
-                <span className="spec-label">حالة التوفر</span>
-                <strong className="spec-val status-available">متاح للمشاريع الجديدة ✓</strong>
-              </div>
-              <div className="pass-spec-item">
-                <span className="spec-label">التخصص الأساسي</span>
-                <strong className="spec-val">Web Apps • React / Next.js • AI Automations</strong>
-              </div>
-            </div>
-
-            <div className="pass-interactive-hint">
-              <Sparkles size={16} />
-              <span>اسحب بطاقة الهوية التفاعلية ثلاثية الأبعاد (3D Lanyard) أو حرّكها بالماوس لتفحص تفاصيلها وخلفيتها</span>
+            <div className="location-pill">
+              <span>{details.location}</span>
             </div>
           </div>
 
-          <div className="pass-lanyard-stage">
+          <h1 className="hero-title">
+            أهندس حلولاً برمجية ذكية،
+            <br />
+            <span className="hero-title-highlight">وتجارب رقمية تصنع فارقاً.</span>
+          </h1>
+
+          <p className="hero-desc">
+            أنا <strong>علي سهيل الكحلوت</strong>، مهندس برمجيات ومطوّر ذكاء اصطناعي.
+            أدمج دقة كود <strong>Full-Stack</strong> مع إمكانيات نماذج <strong>AI</strong> الحديثة
+            لبناء منتجات ويب وتطبيقات SaaS فائقة السرعة، آمنة، وقابلة للتوسع.
+          </p>
+
+          <div className="hero-cta-group">
+            <Magnet padding={30} magnetStrength={2}>
+              <a
+                href={details.whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-primary"
+              >
+                <MessageCircle size={18} />
+                <span>محادثة واتساب مباشرة</span>
+                <ArrowUpLeft size={18} />
+              </a>
+            </Magnet>
+
+            <Magnet padding={30} magnetStrength={2}>
+              <button onClick={onExploreProjects} className="btn-secondary">
+                <Briefcase size={18} />
+                <span>استكشف المشاريع (+10)</span>
+                <ArrowDown size={16} />
+              </button>
+            </Magnet>
+
+            <button onClick={copyCommand} className="terminal-pill" title="انسخ الأمر">
+              <Terminal size={14} />
+              <span><span className="prefix">$</span> npx alosh-portfolio</span>
+              {copied && <span style={{ color: "#10b981" }}>✓ تم النسخ</span>}
+            </button>
+          </div>
+        </div>
+
+        <div className="hero-visual-side">
+          <div className="hero-tech-card">
+            <div className="tech-card-header">
+              <div className="tech-card-dots">
+                <span />
+                <span />
+                <span />
+              </div>
+              <span className="tech-card-title">
+                <DecryptedText text="DEV_STATUS // VERIFIED" speed={28} maxIterations={10} animateOn="view" />
+              </span>
+            </div>
+
+            <div className="tech-card-portrait">
+              <img src="/assets/ali-official.jpg" alt="علي سهيل الكحلوت" />
+              <div className="portrait-glow-overlay" />
+              <div className="portrait-role-badge">
+                <strong>علي سهيل الكحلوت</strong>
+                <span>Full-Stack & AI</span>
+              </div>
+            </div>
+
+            <div className="tech-card-code">
+              <div><span className="code-keyword">const</span> engineer = &#123;</div>
+              <div style={{ paddingLeft: "14px" }}>
+                name: <span className="code-str">"Ali Sohail"</span>,
+              </div>
+              <div style={{ paddingLeft: "14px" }}>
+                focus: [<span className="code-str">"Next.js 15"</span>, <span className="code-str">"AI Automations"</span>],
+              </div>
+              <div style={{ paddingLeft: "14px" }}>
+                mission: <span className="code-str">"Turning complexity into elegant software"</span>
+              </div>
+              <div>&#125;;</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="hero-metrics-strip">
+        <div className="metric-item">
+          <span className="metric-number">+10</span>
+          <span className="metric-label">مشاريع وتطبيقات مكتملة</span>
+        </div>
+        <div className="metric-item">
+          <span className="metric-number">100%</span>
+          <span className="metric-label">التزام بمواعيد الإطلاق والجودة</span>
+        </div>
+        <div className="metric-item">
+          <span className="metric-number">Full-Stack</span>
+          <span className="metric-label">من واجهات المستخدم حتى الخوادم والـ AI</span>
+        </div>
+        <div className="metric-item">
+          <span className="metric-number">SaaS & CRM</span>
+          <span className="metric-label">أنظمة مبيعات وأتمتة رقمية ذكية</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BentoAboutSection() {
+  return (
+    <section className="section-wrapper" id="about">
+      <div className="section-header">
+        <div className="section-kicker">
+          <span>01</span> / عنّي وتخصصاتي
+        </div>
+        <h2 className="section-title">
+          من غزة إلى العالم: هندسة تقنية بمعايير عالمية.
+        </h2>
+        <p className="section-subtitle">
+          أؤمن بأن التحديات تصنع قوة المطور. كل سطر كود أكتبه يهدف لخدمة فكرة حقيقية
+          وخلق قيمة ملموسة للشركات والمستخدمين.
+        </p>
+      </div>
+
+      <div className="bento-grid">
+        {/* Card 1: Main Story */}
+        <div className="bento-card bento-main-story">
+          <div>
+            <span className="bento-tag">ENGINEER PHILOSOPHY</span>
+            <h3 className="bento-title">الكود وسيلة، والنتيجة هي الأثر.</h3>
+            <p className="bento-text">
+              بدأت رحلتي البرمجية من غزة، وطوّرت مهاراتي بالعمل على مشاريع متنوعة تشمل
+              متاجر رقمية متكاملة، أنظمة CRM مدعومة بنماذج لغوية ذكية، ومنصات تعليمية
+              تخدم آلاف الطلاب. هدفي دائماً ليس مجرد تسليم المشروع، بل جعله سريعاً، جذاباً،
+              ومربحاً لصاحبه.
+            </p>
+          </div>
+
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <span className="project-tag" style={{ color: "var(--color-primary)" }}>✓ React 19 & Next.js 15</span>
+            <span className="project-tag" style={{ color: "var(--color-primary-hover)" }}>✓ OpenAI & AI Agents</span>
+            <span className="project-tag" style={{ color: "var(--color-text-secondary)" }}>✓ Modern UI/UX Architecture</span>
+          </div>
+        </div>
+
+        {/* Card 2: 3D Dev Pass */}
+        <div className="bento-card bento-lanyard-stage">
+          <div className="lanyard-card-inner">
             <Suspense
               fallback={
-                <div className="lanyard-loading">
-                  <div className="lanyard-spinner" />
-                  <span>جاري تحميل بطاقة الهوية ثلاثية الأبعاد...</span>
+                <div style={{ color: "var(--color-text-muted)", fontSize: "13px" }}>
+                  جاري تشغيل بطاقة الاعتماد ثلاثية الأبعاد...
                 </div>
               }
             >
               <Lanyard
                 frontImage="/assets/ali-official.jpg"
                 elasticity={0.4}
-                strapLength={0.75}
-                cornerRadius={0.25}
-                cardColor="#ffffff"
-                strapColor="#0f172a"
+                strapLength={0.72}
+                cornerRadius={0.22}
+                cardColor="#2D2424"
+                strapColor="#FF503C"
                 size={0.62}
                 interactive={true}
                 intro={true}
@@ -610,894 +464,664 @@ function AboutSection() {
             </Suspense>
           </div>
         </div>
-      </div>
-      <div className="floating-tech" aria-hidden="true">
-        {technologies.slice(0, 6).map((item) => (
-          <TechIcon key={item.label} item={item} />
-        ))}
-      </div>
-      <div className="story-bottom" data-reveal>
-        <span>React / Next.js / TypeScript / AI</span>
-        <span>
-          مرّر لتكتشف أكثر <ArrowDown size={16} />
-        </span>
+
+        {/* Card 3: Tech Matrix */}
+        <div className="bento-card bento-tech-matrix">
+          <span className="bento-tag">TECH STACK MATRIX</span>
+          <h3 className="bento-title">الأدوات التي أتقنها وأبني بها</h3>
+          <p className="bento-text" style={{ marginBottom: "10px" }}>
+            أختار الأدوات الحديثة والمستقرة لضمان أفضل تجربة للمستخدم وأعلى أداء خادم:
+          </p>
+
+          <div className="tech-grid-items">
+            {techStack.map((tech) => (
+              <SpotlightCard
+                key={tech.name}
+                spotlightColor="rgba(56, 189, 248, 0.25)"
+                className="tech-matrix-item"
+              >
+                {tech.icon ? (
+                  <svg className="tech-matrix-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d={tech.icon.path} />
+                  </svg>
+                ) : tech.lucide ? (
+                  <tech.lucide className="tech-matrix-icon" size={24} />
+                ) : null}
+                <span>{tech.name}</span>
+              </SpotlightCard>
+            ))}
+          </div>
+        </div>
+
+        {/* Card 4: Quality Pillars */}
+        <div className="bento-card bento-pillars">
+          <div>
+            <span className="bento-tag">ENGINEERING STANDARDS</span>
+            <h3 className="bento-title">ركائز الجودة في كل مشروع</h3>
+          </div>
+
+          <div className="pillars-list">
+            <div className="pillar-item">
+              <div className="pillar-icon">
+                <Zap size={18} />
+              </div>
+              <div>
+                <h5>أداء فائق وسرعة تحميل 60fps</h5>
+                <p>تحسين كود الواجهة والـ Core Web Vitals لتجربة خالية من التقطيع.</p>
+              </div>
+            </div>
+
+            <div className="pillar-item">
+              <div className="pillar-icon" style={{ color: "var(--color-primary)", background: "rgba(255, 80, 60, 0.12)" }}>
+                <Bot size={18} />
+              </div>
+              <div>
+                <h5>ذكاء اصطناعي وأتمتة فعالة</h5>
+                <p>ربط النماذج الذكية بأعمالك لتوفير الوقت وزيادة المبيعات والتحويل.</p>
+              </div>
+            </div>
+
+            <div className="pillar-item">
+              <div className="pillar-icon" style={{ color: "var(--color-primary-hover)", background: "rgba(255, 116, 99, 0.12)" }}>
+                <ShieldCheck size={18} />
+              </div>
+              <div>
+                <h5>كود نظيف وقابل للتوسع</h5>
+                <p>بنية معمارية متينة تسهل إضافة المميزات دون إعادة بناء النظام.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function ProcessSection() {
+function ProjectsShowcaseSection() {
+  const [activeFilter, setActiveFilter] = useState<string>("الكل");
+
+  const categories = ["الكل", "ذكاء اصطناعي", "أنظمة SaaS", "تجارة رقمية", "منصات تعليمية", "مواقع وهوية"];
+
+  const filteredProjects = activeFilter === "الكل"
+    ? allProjects
+    : allProjects.filter((p) => p.category === activeFilter);
+
   return (
-    <>
-      <section className="skills-scene" id="skills">
-        <div className="section-kicker" data-reveal>
-          <span>02</span> / الأدوات
+    <section className="section-wrapper" id="projects">
+      <div className="section-header">
+        <div className="section-kicker">
+          <span>02</span> / معرض الأعمال
         </div>
-        <div className="skills-grid">
-          <div className="skills-copy" data-reveal>
-            <span>تقنية تخدم الفكرة</span>
-            <h2>
-              الأدوات
-              <br />
-              اللي ببني <em>بها.</em>
-            </h2>
-            <p>
-              أختار التقنية حسب المشكلة، وأربط الواجهة بالخادم والبيانات
-              والذكاء الاصطناعي في تجربة واحدة.
-            </p>
-          </div>
-          <div className="skills-icons" data-reveal>
-            {technologies.map((item) => (
-              <SpotlightCard
-                key={item.label}
-                spotlightColor="rgba(36, 124, 97, 0.22)"
-                className="skill-spotlight-item"
-              >
-                <div className="skill-row-inner">
-                  <TechIcon item={item} mini />
-                  <span>{item.label}</span>
-                  <ArrowUpLeft size={17} />
-                </div>
-              </SpotlightCard>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section className="name-interlude" aria-label="ALOSH">
-        <AloshMesh />
-        <div className="name-copy" data-reveal>
-          <span>ALOSH / علي سهيل الكحلوت</span>
-          <h2>
-            أكتب الكود.
-            <br />
-            وأفكّر بالنتيجة.
-          </h2>
-          <p>
-            من تطبيقات ويب وSaaS إلى أدوات تعليمية ذكية وأنظمة CRM وأتمتة.
+        <h2 className="section-title">
+          مشاريع حقيقية تصنع أثراً وقيمة.
+        </h2>
+        <p className="section-subtitle">
+          مجموعة مختارة من الأنظمة والمواقع وتطبيقات الـ SaaS التي قمت بتطويرها.
+          جميع المشاريع تعمل على بيئات إنتاج حقيقية ومتاحة للمعاينة المباشرة.
+        </p>
+      </div>
+
+      {/* 3D Showcase Deck */}
+      <div className="card-swap-stage-wrapper">
+        <div className="showcase-stage-header">
+          <span className="showcase-badge">
+            <Sparkles size={14} /> معرض الواجهات التفاعلي — ثلاثي الأبعاد
+          </span>
+          <h3 className="showcase-stage-title">استكشف واجهات المشاريع ثلاثية الأبعاد</h3>
+          <p className="showcase-stage-desc">
+            اسحب البطاقات بالماوس أو حرّكها للتنقل بين واجهات وتطبيقات المشاريع
           </p>
         </div>
-      </section>
-      <section className="type-break">
-        <div className="section-kicker" data-reveal>
-          <span>03</span> / الفكرة
+
+        <div className="card-swap-container">
+          <Suspense
+            fallback={
+              <div style={{ color: "#64748b", padding: "40px" }}>
+                جاري تحميل معرض المشاريع ثلاثي الأبعاد...
+              </div>
+            }
+          >
+            <CardSwap
+              items={featuredSwapItems}
+              width={480}
+              height={340}
+              cardDistance={52}
+              verticalDistance={55}
+              depth={85}
+              skewAmount={4}
+              visibleCards={4}
+              delay={4200}
+              autoplay={true}
+              pauseOnHover={true}
+              draggable={true}
+              theme="dark"
+              cardRadius={20}
+            />
+          </Suspense>
         </div>
-        <div className="break-inner" data-reveal>
-          <p>كل شيء يبدأ بسؤال بسيط:</p>
-          <h2>ليش نضيّع</h2>
-          <h2 className="stretch-line">وقــــــــت؟</h2>
-          <span>حين ممكن نبني حلًّا أذكى.</span>
+      </div>
+
+      {/* 3D Glass Folders Archive */}
+      <div className="folders-showcase-wrapper">
+        <div className="folders-header">
+          <h3 className="folders-title">أرشيف المشاريع ثلاثي الأبعاد</h3>
+          <p className="folders-subtitle">
+            انقر على أي مجلد لتفتحه في مساحة ثلاثية الأبعاد، واستكشف ملفات الأنظمة والروابط الحية لكل مشروع
+          </p>
         </div>
-      </section>
-    </>
+
+        <div className="folders-grid">
+          <GlassFolder
+            label="حلول الذكاء الاصطناعي"
+            meta="3 أنظمة ذكية مباشرة"
+            tone="dark"
+            art="aurora"
+            width={330}
+            files={[
+              { name: "AI WhatsApp CRM", meta: "وكيل الرد والمبيعات", href: "https://crm-ai-whatsapp22.vercel.app/" },
+              { name: "AI Builder", meta: "أداة برمجة التطبيقات", href: "https://ai-builder-gray.vercel.app/" },
+              { name: "OpenAI Logic Core", meta: "نواة المعالجة اللغوية" },
+            ]}
+          />
+
+          <GlassFolder
+            label="أنظمة SaaS والتجارة"
+            meta="متاجر وبوابات دفع"
+            tone="dark"
+            art="glacier"
+            width={330}
+            files={[
+              { name: "Alosh Store", meta: "متجر الاشتراكات الرقمية", href: "https://aloshstore.com/" },
+              { name: "Automated Payment Gateways", meta: "Stripe & FastPay" },
+              { name: "Real-time Order Dispatch", meta: "تسليم فوري للمنتجات" },
+            ]}
+          />
+
+          <GlassFolder
+            label="المنصات وهوية الشركات"
+            meta="مواقع وتجارب WebGL"
+            tone="dark"
+            art="ember"
+            width={330}
+            files={[
+              { name: "ATHAR Platform", meta: "أثر لحلول الأعمال", href: "https://atherv1.vercel.app/ar" },
+              { name: "CoreX Agency", meta: "حلول برمجية وهوية مؤسسية", href: "https://corex1-puce.vercel.app/ar" },
+              { name: "Digital Training Academy", meta: "منصة تدريب المهارات", href: "https://alosh.nzmly.com/" },
+            ]}
+          />
+        </div>
+      </div>
+
+      {/* Categories Filter */}
+      <div className="projects-filter-bar">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            className={`filter-btn ${activeFilter === cat ? "active" : ""}`}
+            onClick={() => setActiveFilter(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Rich Project Cards Grid */}
+      <div className="projects-grid">
+        {filteredProjects.map((project) => (
+          <article key={project.title} className="project-card">
+            <div className="project-thumbnail">
+              <img src={project.image} alt={project.title} loading="lazy" />
+              <div className="project-thumb-overlay" />
+              <span className="project-type-badge">{project.tag}</span>
+            </div>
+
+            <div className="project-body">
+              <div>
+                <div className="project-title-row">
+                  <h4 className="project-title">{project.title}</h4>
+                </div>
+                <p style={{ fontSize: "13px", color: "var(--color-primary)", marginBottom: "6px", fontWeight: "600" }}>
+                  {project.arabic}
+                </p>
+                <p className="project-desc">{project.description}</p>
+              </div>
+
+              <div>
+                <div className="project-tags-list">
+                  {project.tech.map((t) => (
+                    <span key={t} className="project-tag">{t}</span>
+                  ))}
+                </div>
+
+                <div className="project-footer-row">
+                  <span className="project-status">
+                    <CheckCircle2 size={14} />
+                    <span>مباشر على السيرفر</span>
+                  </span>
+
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="project-link-btn"
+                  >
+                    <span>معاينة المشروع</span>
+                    <ArrowUpLeft size={16} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 
-function ProjectsSection({
-  filter,
-  setFilter,
-  onNavigateContact,
-}: {
-  filter: string;
-  setFilter: (f: string) => void;
-  onNavigateContact?: () => void;
-}) {
+function InnovationLabSection({ onNavigateContact }: { onNavigateContact: () => void }) {
+  const [labTab, setLabTab] = useState<"bento" | "spline">("bento");
+
   return (
-    <>
-      <section className="works" id="work">
-        <div className="section-kicker" data-reveal>
-          <span>04</span> / المشاريع
-        </div>
-        <div className="works-head" data-reveal>
-          <div>
-            <span className="eyebrow">SELECTED WORK / 2026</span>
-            <h2>
-              أعمال تتحوّل
-              <br />
-              <em>لأثر.</em>
-            </h2>
-          </div>
-          <p>
-            هذه مشاريع من معرض أعمالي، من المتاجر والمنصات إلى أنظمة الذكاء
-            الاصطناعي. كل مشروع له فكرته وتحدياته.
-          </p>
-        </div>
-        <div className="folder-float-showcase" data-reveal>
-          <div className="folder-float-header">
-            <span className="folder-badge">
-              <Folder size={14} /> مجلد المشاريع التفاعلي (Folder Float)
-            </span>
-            <h3>المشاريع تنطلق وتطفو فيزيائياً في الهواء</h3>
-            <p>
-              مرّر الماوس أو اضغط على المجلد لتخرج بطاقات المشاريع وتطفو
-              بفيزياء تفاعلية. يمكنك سحب أي مشروع أو النقر عليه لفتحه مباشرة.
-            </p>
-          </div>
-          <div className="folder-float-stage">
-            <Suspense fallback={<div>جاري تحميل المجلد...</div>}>
-              <FolderFloat
-                items={projects.map((p) => ({
-                  label: p.title,
-                  value: p.title,
-                  tag: p.tag,
-                  url: p.url,
-                }))}
-                label="مشاريع علي"
-                sublabel={`${projects.length} مشاريع رقمية`}
-                trigger="hover"
-                defaultOpen={true}
-                physics={true}
-                drift={0.6}
-                spread={260}
-                lift={36}
-                frontColor="#ffffff"
-                paperColor="#94a3b8"
-                itemColor="#0057ff"
-                itemTextColor="#000000"
-                folderColor="#1e1b26"
-                labelColor="#18181b"
-                width={240}
-                height={165}
-                onSelect={(value) => {
-                  const target = projects.find((p) => p.title === value);
-                  if (target?.url) {
-                    window.open(target.url, "_blank");
-                  }
-                }}
-              />
-            </Suspense>
-          </div>
-        </div>
-        <div className="work-swap-showcase" data-reveal>
-          <div className="work-swap-badge">
-            <Sparkles size={15} /> واجهات المشاريع التفاعلية — ثلاثية الأبعاد
-          </div>
-          <div className="work-swap-container">
-            <Suspense
-              fallback={
-                <div style={{ color: "#aaa", fontSize: "14px" }}>
-                  جاري تحميل معرض المشاريع...
-                </div>
-              }
-            >
-              <CardSwap
-                items={featuredSwapItems}
-                width={480}
-                height={350}
-                cardDistance={52}
-                verticalDistance={60}
-                depth={85}
-                skewAmount={4}
-                visibleCards={4}
-                delay={4500}
-                autoplay={true}
-                pauseOnHover={true}
-                draggable={true}
-                theme="dark"
-                cardRadius={20}
-              />
-            </Suspense>
-          </div>
-          <div className="work-swap-nav-hint">
-            <span>
-              💡 اسحب البطاقة أو حرّكها بالماوس للتنقل بين واجهات المشاريع، أو
-              اضغط «زيارة المشروع» للفتح المباشر.
-            </span>
-          </div>
-        </div>
-        <div className="work-filters" aria-label="تصفية المشاريع">
-          {["الكل", "ذكاء اصطناعي", "منصات", "تجارة رقمية", "مواقع"].map(
-            (item) => (
-              <button
-                className={filter === item ? "selected" : ""}
-                key={item}
-                onClick={() => setFilter(item)}
-              >
-                {item}
-              </button>
-            ),
-          )}
-        </div>
-        <div className="work-grid">
-          {projects
-            .filter((project) => filter === "الكل" || project.type === filter)
-            .map((project, index) => (
-              <article
-                className={`work-card theme-${project.theme}`}
-                key={project.title}
-              >
-                <div className="work-visual">
-                  <span className="work-counter">
-                    {String(index + 1).padStart(2, "0")} / {project.tag}
-                  </span>
-                  {project.image ? (
-                    <>
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="work-visual-img"
-                        loading="lazy"
-                      />
-                      <div className="work-visual-overlay" />
-                    </>
-                  ) : (
-                    <div className="work-glass">
-                      <span>{project.mark}</span>
-                      <i />
-                      <i />
-                    </div>
-                  )}
-                </div>
-                <div className="work-info">
-                  <div>
-                    <span>{project.type}</span>
-                    <h3>{project.title}</h3>
-                    <p>{project.arabic}</p>
-                  </div>
-                  {project.url ? (
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`زيارة ${project.title}`}
-                    >
-                      <ArrowUpLeft size={22} />
-                    </a>
-                  ) : (
-                    <span className="no-link">الرابط غير متاح</span>
-                  )}
-                </div>
-              </article>
-            ))}
-        </div>
-      </section>
-
-      {/* --- مختبر الأبعاد الثلاثية والذكاء الاصطناعي (Spline 3D & React Bits Lab) --- */}
-      <section className="spline-lab-section" id="lab" data-reveal>
+    <section className="section-wrapper" id="lab">
+      <div className="section-header">
         <div className="section-kicker">
-          <span>05</span> / مختبر 3D & AI
+          <span>03</span> / مختبر 3D & AI
         </div>
+        <h2 className="section-title">
+          مختبر الواجهات الذكية والـ WebGL.
+        </h2>
+        <p className="section-subtitle">
+          هنا ندمج محركات الـ WebGL مع واجهات المستقبل لخلق تجارب استثنائية تميز منتجك في السوق.
+        </p>
+      </div>
 
-        <div className="spline-lab-container">
-          <div className="spline-lab-meta">
-            <div className="lab-badge-pill">
-              <span className="lab-pulse" />
-              <DecryptedText
-                text="SPLINE 3D × REACT BITS LAB"
-                speed={35}
-                maxIterations={12}
-                animateOn="view"
-              />
-            </div>
+      {/* Lab Showcase Tab Switcher */}
+      <div className="lab-tab-switcher">
+        <button
+          className={`lab-tab-btn ${labTab === "bento" ? "active" : ""}`}
+          onClick={() => setLabTab("bento")}
+        >
+          <Sparkles size={16} />
+          <span>لوحة بينتو المالية التفاعلية (Finance Bento)</span>
+        </button>
+        <button
+          className={`lab-tab-btn ${labTab === "spline" ? "active" : ""}`}
+          onClick={() => setLabTab("spline")}
+        >
+          <Bot size={16} />
+          <span>مجسم الروبوت 3D (Spline)</span>
+        </button>
+      </div>
 
-            <h2 className="lab-title">
-              مختبر الأبعاد الثلاثية
-              <br />
-              <span className="lab-gradient-text">والذكاء الاصطناعي.</span>
-            </h2>
+      {labTab === "bento" && (
+        <div className="finance-bento-stage">
+          <Suspense
+            fallback={
+              <div style={{ display: "grid", placeItems: "center", minHeight: "400px", color: "#64748b" }}>
+                <span>جاري تحميل لوحة البيانات المالية التفاعلية...</span>
+              </div>
+            }
+          >
+            <FinanceBentoDemo />
+          </Suspense>
+        </div>
+      )}
 
+      {labTab === "spline" && (
+        <div className="lab-card-wrapper">
+          <div className="lab-meta">
+            <span className="bento-tag">WEBGL & INTELLIGENCE LAB</span>
+            <h3 className="lab-title">
+              تجارب بصرية تفاعلية تفوق التوقعات.
+            </h3>
             <p className="lab-desc">
-              تجربة تفاعلية تجمع بين برمجة الـ WebGL ثلاثية الأبعاد من Spline مع واجهات المستخدم فائقة الأداء من React Bits. تتيح للمستخدمين استكشاف النماذج والتحكم بها لحظياً في الفضاء الرقمي.
+              أستخدم تقنيات مثل Spline و Three.js و Matter.js لبناء عناصر ومحاكاة ثلاثية الأبعاد
+              تتفاعل مع حركة المؤشر ولمسات المستخدم وتمنح تطبيقك طابعاً مستقبلياً رفيع المستوى.
             </p>
 
-            <div className="lab-features-grid">
-              <SpotlightCard spotlightColor="rgba(56, 189, 248, 0.2)" className="lab-card">
-                <div className="lab-card-icon">⚡</div>
-                <h4>محركات WebGL تفاعلية</h4>
-                <p>أداء 60fps مع معالجة فيزيائية وتتبع المؤشر في الوقت الفعلي.</p>
-              </SpotlightCard>
-
-              <SpotlightCard spotlightColor="rgba(16, 185, 129, 0.2)" className="lab-card">
-                <div className="lab-card-icon">🧠</div>
-                <h4>أنظمة ذكاء اصطناعي</h4>
-                <p>أتمتة ذكية، وكلاء AI مستقلين، وربط نماذج لغوية بالواجهات البرمجية.</p>
-              </SpotlightCard>
+            <div className="lab-specs-grid">
+              <div className="lab-spec-box">
+                <h5><Zap size={15} color="var(--color-primary)" /> سرعة أداء 60fps</h5>
+                <p>استهلاك منخفض لموارد المعالج وتوافق مع الهواتف.</p>
+              </div>
+              <div className="lab-spec-box">
+                <h5><Bot size={15} color="var(--color-primary-hover)" /> أتمتة AI مدمجة</h5>
+                <p>تكامل مباشر مع روبوتات ووكلاء الـ AI الذاتية.</p>
+              </div>
             </div>
 
-            <div className="lab-cta-row">
-              <Magnet padding={40} magnetStrength={3}>
-                <button
-                  className="lab-action-btn"
-                  onClick={
-                    onNavigateContact ||
-                    (() =>
-                      document
-                        .getElementById("contact")
-                        ?.scrollIntoView({ behavior: "smooth" }))
-                  }
-                >
-                  <span>ابنِ تجربة ثلاثية الأبعاد لمشروعك</span>
+            <div>
+              <Magnet padding={30} magnetStrength={2}>
+                <button onClick={onNavigateContact} className="btn-primary">
+                  <span>اطلب تجربة 3D لمشروعك</span>
                   <ArrowUpLeft size={18} />
                 </button>
               </Magnet>
             </div>
           </div>
 
-          <div className="spline-viewport-card">
+          <div className="lab-3d-stage">
             <Suspense
               fallback={
-                <div className="spline-loading">
+                <div style={{ display: "grid", placeItems: "center", height: "100%", color: "#64748b" }}>
                   <span>جاري تحميل المشهد ثلاثي الأبعاد...</span>
                 </div>
               }
             >
               <SplineScene
                 scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                hintText="اسحب بالماوس أو لمس الشاشة لتحريك روبوت الذكاء الاصطناعي في الفضاء 3D"
+                hintText=""
               />
             </Suspense>
           </div>
         </div>
-      </section>
-    </>
+      )}
+    </section>
   );
 }
 
-function ContactSection({
-  form,
-  setForm,
-  sendEmail,
-  onHome,
-}: {
-  form: { name: string; email: string; message: string };
-  setForm: React.Dispatch<React.SetStateAction<{ name: string; email: string; message: string }>>;
-  sendEmail: (event: FormEvent<HTMLFormElement>) => void;
-  onHome: () => void;
-}) {
+function ContactSection() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [sent, setSent] = useState(false);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`طلب تعاون جديد من ${form.name}`);
+    const body = encodeURIComponent(`الاسم: ${form.name}\nالبريد: ${form.email}\n\nالرسالة:\n${form.message}`);
+    window.location.href = `mailto:${details.email}?subject=${subject}&body=${body}`;
+    setSent(true);
+  };
+
   return (
-    <>
-      <section className="statement" data-reveal>
-        <div className="statement-icons" aria-hidden="true">
-          {technologies.slice(0, 4).map((item) => (
-            <TechIcon key={item.label} item={item} mini />
-          ))}
+    <section className="section-wrapper" id="contact">
+      <div className="section-header">
+        <div className="section-kicker">
+          <span>04</span> / تواصل معي
         </div>
-        <h2>
-          الفكرة بداية.
-          <br />
-          <span>والتنفيذ هو الفرق.</span>
+        <h2 className="section-title">
+          عندك فكرة أو مشروع؟ دعنا نحولها لكود وواقع.
         </h2>
-        <p>أحب التفاصيل اللي تجعل المنتج واضحًا، سريعًا، ومفيدًا للناس.</p>
-      </section>
-      <section className="contact" id="contact">
-        <div className="section-kicker" data-reveal>
-          <span>05</span> / تواصل
-        </div>
-        <div className="contact-grid">
-          <div className="contact-copy" data-reveal>
-            <span>عندك مشروع أو فكرة؟</span>
-            <h2>
-              فكرتك الجاية.
-              <br />
-              نخلّيها <em>حقيقة.</em>
-            </h2>
-            <a href={`mailto:${details.email}`}>{details.email}</a>
-            <div className="contact-social">
-              <a href={details.github} target="_blank" rel="noreferrer">
-                <Github size={17} /> GitHub
-              </a>
-              <a href={details.instagram} target="_blank" rel="noreferrer">
-                <Instagram size={17} /> Instagram
-              </a>
+        <p className="section-subtitle">
+          سواء كنت تبحث عن مطور Full-Stack لبناء منتجك من الصفر، أو ترغب في دمج الذكاء الاصطناعي
+          في نظامك القائم، يسعدني التحدث معك.
+        </p>
+      </div>
+
+      <div className="contact-grid">
+        <div className="contact-info-panel">
+          {/* Direct WhatsApp High-Converting Card */}
+          <a
+            href={details.whatsappUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="contact-direct-card whatsapp"
+          >
+            <div className="contact-icon-bubble">
+              <MessageCircle size={24} />
             </div>
+            <div className="contact-card-text">
+              <span>تواصل مباشر عبر واتساب (الرد الأسرع)</span>
+              <strong>{details.phone}</strong>
+            </div>
+            <ArrowUpLeft size={20} style={{ marginRight: "auto" }} />
+          </a>
+
+          <a href={`mailto:${details.email}`} className="contact-direct-card">
+            <div className="contact-icon-bubble">
+              <Mail size={24} />
+            </div>
+            <div className="contact-card-text">
+              <span>البريد الإلكتروني المباشر</span>
+              <strong>{details.email}</strong>
+            </div>
+            <ArrowUpLeft size={20} style={{ marginRight: "auto" }} />
+          </a>
+
+          <div className="social-links-row">
+            <a href={details.github} target="_blank" rel="noreferrer" className="social-btn">
+              <Github size={18} />
+              <span>GitHub</span>
+            </a>
+            <a href={details.instagram} target="_blank" rel="noreferrer" className="social-btn">
+              <Instagram size={18} />
+              <span>Instagram</span>
+            </a>
           </div>
-          <form onSubmit={sendEmail} data-reveal>
-            <label>
-              اسمك
+        </div>
+
+        <div className="contact-form-panel">
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>الاسم الكامل</label>
               <input
                 required
-                name="name"
-                value={form.name}
-                onChange={(event) =>
-                  setForm({ ...form, name: event.target.value })
-                }
+                className="form-input"
                 placeholder="كيف أناديك؟"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
-            </label>
-            <label>
-              الإيميل
+            </div>
+
+            <div className="form-group">
+              <label>البريد الإلكتروني</label>
               <input
                 required
                 type="email"
-                name="email"
+                className="form-input"
+                placeholder="name@company.com"
                 value={form.email}
-                onChange={(event) =>
-                  setForm({ ...form, email: event.target.value })
-                }
-                placeholder="you@company.com"
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
-            </label>
-            <label>
-              احكيلي عن فكرتك
+            </div>
+
+            <div className="form-group">
+              <label>تفاصيل الفكرة أو المشروع</label>
               <textarea
                 required
-                name="message"
-                rows={3}
+                className="form-textarea"
+                rows={4}
+                placeholder="احكيلي عن تطبيقك، موعدك المتوقع، أو الميزات التي تحتاجها..."
                 value={form.message}
-                onChange={(event) =>
-                  setForm({ ...form, message: event.target.value })
-                }
-                placeholder="موقع، تطبيق، أو فكرة تحب نحولها لشيء حقيقي..."
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
               />
-            </label>
-            <button type="submit">
-              ابدأ المحادثة <ArrowDownLeft size={20} />
+            </div>
+
+            <button type="submit" className="form-submit-btn">
+              <span>إرسال الرسالة وبدء المحادثة</span>
+              <Send size={16} />
             </button>
-            <small>يفتح تطبيق البريد لديك مع الرسالة جاهزة للإرسال.</small>
+            {sent && (
+              <p style={{ color: "#10b981", fontSize: "13px", marginTop: "10px", textAlign: "center" }}>
+                ✓ سيتم فتح تطبيق البريد لديك فوراً لإرسال الرسالة.
+              </p>
+            )}
           </form>
         </div>
-        <footer>
-          <span>
-            © {new Date().getFullYear()} {details.name}
-          </span>
-          <button onClick={onHome}>
-            العودة للبداية <ArrowLeft size={16} />
+      </div>
+    </section>
+  );
+}
+
+function SiteFooter() {
+  return (
+    <footer className="site-footer">
+      <div className="footer-copy">
+        <strong>{details.name} — {details.role}</strong>
+        <span>جميع الحقوق محفوظة © {new Date().getFullYear()}</span>
+      </div>
+
+      <div className="footer-palestine-badge">
+        <span>صُنع بشغف وإتقان من</span>
+        <strong>غزة، فلسطين 🇵🇸</strong>
+      </div>
+    </footer>
+  );
+}
+
+/* Dedicated Subpages */
+function SubpageAbout({ onHome, onNavigateContact }: { onHome: () => void; onNavigateContact: () => void }) {
+  return (
+    <div className="subpage-container">
+      <div className="subpage-breadcrumbs">
+        <button onClick={onHome} className="breadcrumb-back-link">
+          <ArrowLeft size={16} /> العودة للرئيسية
+        </button>
+        <span className="breadcrumb-current-tag">/about • عنّي وتخصصاتي</span>
+      </div>
+      <BentoAboutSection />
+      <div style={{ textAlign: "center", padding: "40px" }}>
+        <button onClick={onNavigateContact} className="btn-primary">
+          <span>دعنا نعمل معاً</span>
+          <ArrowUpLeft size={18} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SubpageProjects({ onHome }: { onHome: () => void }) {
+  return (
+    <div className="subpage-container">
+      <div className="subpage-breadcrumbs">
+        <button onClick={onHome} className="breadcrumb-back-link">
+          <ArrowLeft size={16} /> العودة للرئيسية
+        </button>
+        <span className="breadcrumb-current-tag">/projects • أرشيف المشاريع الكامل</span>
+      </div>
+      <ProjectsShowcaseSection />
+    </div>
+  );
+}
+
+function SubpageProcess({ onHome, onNavigateContact }: { onHome: () => void; onNavigateContact: () => void }) {
+  return (
+    <div className="subpage-container">
+      <div className="subpage-breadcrumbs">
+        <button onClick={onHome} className="breadcrumb-back-link">
+          <ArrowLeft size={16} /> العودة للرئيسية
+        </button>
+        <span className="breadcrumb-current-tag">/process • منهجية التطوير من الفكرة للكود</span>
+      </div>
+
+      <section className="section-wrapper">
+        <div className="section-header">
+          <div className="section-kicker">WORKFLOW</div>
+          <h2 className="section-title">كيف نحول الفكرة إلى منتج برمجي ناجح؟</h2>
+          <p className="section-subtitle">
+            خطوات واضحة ومنظمة تضمن لك تسليم كود متقن وتجربة استخدام تزيد مبيعاتك.
+          </p>
+        </div>
+
+        <div className="process-timeline">
+          <div className="process-step-card">
+            <span className="process-step-number">01</span>
+            <h4>الاستكشاف والتخطيط</h4>
+            <p>فهم أهداف المشروع، دراسة سلوك المستخدمين، وتحديد الهيكل البرمجي والتقنيات الأنسب.</p>
+          </div>
+
+          <div className="process-step-card">
+            <span className="process-step-number">02</span>
+            <h4>التصميم وهندسة الواجهات</h4>
+            <p>بناء واجهات Figma عصرية مع نماذج تفاعلية ونظام تصميم (Design Tokens) متكامل.</p>
+          </div>
+
+          <div className="process-step-card">
+            <span className="process-step-number">03</span>
+            <h4>البرمجة ودمج الـ AI</h4>
+            <p>كتابة كود نظيف بـ Next.js و TypeScript، مع ربط قواعد البيانات ووكلاء الذكاء الاصطناعي.</p>
+          </div>
+
+          <div className="process-step-card">
+            <span className="process-step-number">04</span>
+            <h4>الاختبار، النشر والنمو</h4>
+            <p>فحص الأداء والأمان، إطلاق المشروع على سيرفرات سريعة، والمتابعة المستمرة لضمان النجاح.</p>
+          </div>
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: "50px" }}>
+          <button onClick={onNavigateContact} className="btn-primary">
+            <span>ابدأ مشروعك معنا الآن</span>
+            <ArrowUpLeft size={18} />
           </button>
-        </footer>
+        </div>
       </section>
-    </>
+    </div>
+  );
+}
+
+function SubpageContact({ onHome }: { onHome: () => void }) {
+  return (
+    <div className="subpage-container">
+      <div className="subpage-breadcrumbs">
+        <button onClick={onHome} className="breadcrumb-back-link">
+          <ArrowLeft size={16} /> العودة للرئيسية
+        </button>
+        <span className="breadcrumb-current-tag">/contact • ابدأ مشروعك الآن</span>
+      </div>
+      <ContactSection />
+    </div>
   );
 }
 
 function PortfolioApp() {
   const { currentRoute, navigate } = usePageNavigation();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [wavesFailed, setWavesFailed] = useState(false);
-  const [filter, setFilter] = useState("الكل");
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-
-  useMotion();
-  usePointerDepth();
 
   useEffect(() => {
-    document.body.classList.toggle("menu-open", menuOpen);
-    return () => document.body.classList.remove("menu-open");
-  }, [menuOpen]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentRoute]);
 
-  const goTo = (id: string) => {
-    setMenuOpen(false);
+  const scrollToSection = (id: string) => {
     if (currentRoute !== "/") {
       navigate("/").then(() => {
         setTimeout(() => {
           document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-        }, 60);
+        }, 100);
       });
     } else {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
-  const sendEmail = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const subject = encodeURIComponent(`طلب تعاون من ${form.name}`);
-    const body = encodeURIComponent(
-      `الاسم: ${form.name}\nالبريد: ${form.email}\n\nالفكرة:\n${form.message}`,
-    );
-    window.location.href = `mailto:${details.email}?subject=${subject}&body=${body}`;
-  };
-
   return (
-    <ClickSpark sparkColor="#38bdf8" sparkCount={8} sparkRadius={24} duration={450}>
-      <nav className="floating-dock" aria-label="التنقل الرئيسي">
-        <Magnet padding={35} magnetStrength={2.2}>
-          <button
-            className={`dock-lang ${currentRoute === "/" ? "active" : ""}`}
-            onClick={() => {
-              if (currentRoute === "/") {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              } else {
-                navigate("/");
-              }
-            }}
-            aria-label="الرئيسية"
-          >
-            AR
-          </button>
-        </Magnet>
-        <span className="dock-divider" />
-        <Magnet padding={35} magnetStrength={2.2}>
-          <button
-            className={`dock-app dock-green ${currentRoute === "/contact" ? "active" : ""}`}
-            onClick={() => navigate("/contact")}
-            aria-label="تواصل"
-          >
-            ✉
-          </button>
-        </Magnet>
-        <Magnet padding={35} magnetStrength={2.2}>
-          <button
-            className={`dock-app dock-coral ${currentRoute === "/about" ? "active" : ""}`}
-            onClick={() => navigate("/about")}
-            aria-label="عني"
-          >
-            ✳
-          </button>
-        </Magnet>
-        <Magnet padding={35} magnetStrength={2.2}>
-          <button
-            className={`dock-app dock-orange ${currentRoute === "/projects" ? "active" : ""}`}
-            onClick={() => navigate("/projects")}
-            aria-label="الأعمال"
-          >
-            ↗
-          </button>
-        </Magnet>
-        <Magnet padding={35} magnetStrength={2.2}>
-          <a
-            className="dock-app dock-blue"
-            href={details.github}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="GitHub"
-          >
-            <Github size={15} />
-          </a>
-        </Magnet>
-        <Magnet padding={35} magnetStrength={2.2}>
-          <button
-            className="dock-menu"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? "إغلاق القائمة" : "فتح القائمة"}
-          >
-            {menuOpen ? <X size={17} /> : <Menu size={17} />}
-          </button>
-        </Magnet>
-      </nav>
-      <div
-        className={`menu-screen ${menuOpen ? "open" : ""}`}
-        aria-hidden={!menuOpen}
-      >
-        <button
-          onClick={() => {
-            setMenuOpen(false);
-            navigate("/");
-          }}
-        >
-          الرئيسية <span>01</span>
-        </button>
-        <button
-          onClick={() => {
-            setMenuOpen(false);
-            navigate("/about");
-          }}
-        >
-          عنّي <span>02</span>
-        </button>
-        <button
-          onClick={() => {
-            setMenuOpen(false);
-            navigate("/process");
-          }}
-        >
-          من الفكرة للكود (الأدوات) <span>03</span>
-        </button>
-        <button
-          onClick={() => {
-            setMenuOpen(false);
-            navigate("/projects");
-          }}
-        >
-          المشاريع <span>04</span>
-        </button>
-        <button
-          onClick={() => {
-            setMenuOpen(false);
-            navigate("/contact");
-          }}
-        >
-          تواصل <span>05</span>
-        </button>
+    <ClickSpark sparkColor="#FF503C" sparkCount={8} sparkRadius={22} duration={400}>
+      {/* Ambient Visual Atmosphere */}
+      <div className="ambient-bg" aria-hidden="true">
+        <div className="ambient-glow-1" />
+        <div className="ambient-glow-2" />
+        <div className="ambient-glow-3" />
+        <div className="ambient-grid" />
       </div>
 
-      {currentRoute === "/" ? (
+      <FloatingDock currentRoute={currentRoute} navigate={navigate} />
+
+      {currentRoute === "/" && (
         <main>
-          <div className="dark-opening" id="home">
-            <section className="hero">
-              {!wavesFailed && (
-                <Suspense fallback={null}>
-                  <ShapeWaves
-                    className="hero-waves"
-                    shapes="mixed"
-                    cellSize={15}
-                    dotSize={0.58}
-                    color="#c9b7a4"
-                    hoverColor="#c6e7c9"
-                    backgroundColor="#332720"
-                    speed={0.6}
-                    brightness={0.55}
-                    glow={0.18}
-                    fade={0.12}
-                    splashStrength={0.35}
-                    onError={() => setWavesFailed(true)}
-                  />
-                </Suspense>
-              )}
-              <div className="hero-grain" />
-              <div className="hero-word hero-first">علي</div>
-              <div className="hero-word hero-last">سهيل</div>
-              <div className="hero-person">
-                <img src="/assets/ali-cutout.png" alt="علي سهيل" />
-              </div>
-              <div className="hero-mini-note">
-                <span className="note-dot" />{" "}
-                <DecryptedText
-                  text="علي سهيل الكحلوت / مطوّر Full-Stack وذكاء اصطناعي"
-                  speed={32}
-                  maxIterations={12}
-                  animateOn="hover"
-                />
-              </div>
-              <Magnet padding={40} magnetStrength={2.6}>
-                <button
-                  className="hero-scroll"
-                  onClick={() => navigate("/about")}
-                >
-                  اكتشف أكثر <ArrowDown size={15} />
-                </button>
-              </Magnet>
-            </section>
-            <section className="entry-deck" aria-label="استكشف الموقع">
-              {/* البطاقة الأولى: من الفكرة للكود -> /process */}
-              <button
-                className="entry-card entry-tools"
-                onClick={() => navigate("/process")}
-              >
-                <div className="entry-icons">
-                  {technologies.slice(0, 4).map((item) => (
-                    <TechIcon key={item.label} item={item} mini />
-                  ))}
-                </div>
-                <span>الأدوات اللي ببني بها</span>
-                <strong>من الفكرة للكود.</strong>
-                <ArrowUpLeft size={18} />
-              </button>
-
-              {/* المجلد الأول: المشاريع -> /projects */}
-              <div
-                className="entry-card-folder"
-                onClick={() => navigate("/projects")}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && navigate("/projects")}
-              >
-                <div className="entry-folder-header">
-                  <span className="entry-badge">01 / 12</span>
-                  <span>مختارات من أعمالي</span>
-                  <ArrowUpLeft size={16} />
-                </div>
-                <div className="entry-folder-stage">
-                  <Suspense
-                    fallback={<div className="folder-loading">المشاريع...</div>}
-                  >
-                    <FolderBox
-                      label="المشاريع"
-                      color="#ffffff"
-                      paperColor="#9e662c"
-                      mode="flap"
-                      variant="solid"
-                      size={0.88}
-                      openOn="hover"
-                      items={projectFolderItems}
-                      onItemClick={() => navigate("/projects")}
-                    />
-                  </Suspense>
-                </div>
-                <div className="entry-folder-footer">
-                  <strong>المشاريع</strong>
-                  <small>افتح معرض الأعمال ↗</small>
-                </div>
-              </div>
-
-              {/* المجلد الثاني: أبني حلولًا -> /about */}
-              <div
-                className="entry-card-folder"
-                onClick={() => navigate("/about")}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && navigate("/about")}
-              >
-                <div className="entry-folder-header">
-                  <span className="entry-badge">FULL-STACK × AI</span>
-                  <span>من غزة، إلى العالم</span>
-                  <ArrowUpLeft size={16} />
-                </div>
-                <div className="entry-folder-stage">
-                  <Suspense
-                    fallback={<div className="folder-loading">أبني حلولًا...</div>}
-                  >
-                    <FolderBox
-                      label="أبني حلولًا"
-                      color="#ffffff"
-                      paperColor="#9e662c"
-                      mode="flap"
-                      variant="solid"
-                      size={0.88}
-                      openOn="hover"
-                      items={solutionFolderItems}
-                      onItemClick={() => navigate("/about")}
-                    />
-                  </Suspense>
-                </div>
-                <div className="entry-folder-footer">
-                  <strong>أبني حلولًا</strong>
-                  <small>لأفكار تستحق النجاح ↗</small>
-                </div>
-              </div>
-
-              {/* المجلد الثالث: عندك فكرة؟ -> /contact */}
-              <div
-                className="entry-card-folder"
-                onClick={() => navigate("/contact")}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && navigate("/contact")}
-              >
-                <div className="entry-folder-header">
-                  <span className="entry-badge">HELLO@ALI</span>
-                  <span>لنبدأ من هنا</span>
-                  <ArrowUpLeft size={16} />
-                </div>
-                <div className="entry-folder-stage">
-                  <Suspense
-                    fallback={<div className="folder-loading">عندك فكرة؟...</div>}
-                  >
-                    <FolderBox
-                      label="عندك فكرة؟"
-                      color="#ffffff"
-                      paperColor="#9e662c"
-                      mode="flap"
-                      variant="solid"
-                      size={0.88}
-                      openOn="hover"
-                      items={contactFolderItems}
-                      onItemClick={() => navigate("/contact")}
-                    />
-                  </Suspense>
-                </div>
-                <div className="entry-folder-footer">
-                  <strong>عندك فكرة؟</strong>
-                  <small>خلّينا نحكي عنها ↗</small>
-                </div>
-              </div>
-            </section>
-          </div>
-
-          <AboutSection />
-          <ProcessSection />
-          <ProjectsSection
-            filter={filter}
-            setFilter={setFilter}
-            onNavigateContact={() => navigate("/contact")}
-          />
-          <ContactSection
-            form={form}
-            setForm={setForm}
-            sendEmail={sendEmail}
-            onHome={() => goTo("home")}
-          />
+          <HeroSection onExploreProjects={() => scrollToSection("spatial-tunnel")} />
+          <Suspense fallback={<div className="h-screen w-full bg-[#191515] flex items-center justify-center text-[#FF503C] font-mono text-sm">جاري تجهيز ممر المشاريع ثلاثي الأبعاد...</div>}>
+            <PerspectiveTunnelHero usePageScroll={true} subtitle="" />
+          </Suspense>
+          <BentoAboutSection />
+          <ProjectsShowcaseSection />
+          <InnovationLabSection onNavigateContact={() => scrollToSection("contact")} />
+          <ContactSection />
+          <SiteFooter />
         </main>
-      ) : (
-        <div className="subpage-container">
-          {currentRoute === "/about" && (
-            <>
-              <div className="subpage-nav-bar">
-                <button
-                  className="subpage-back-link"
-                  onClick={() => navigate("/")}
-                >
-                  <ArrowLeft size={16} /> العودة للرئيسية
-                </button>
-                <span className="subpage-nav-crumb">/about • من غزة إلى العالم</span>
-              </div>
-              <AboutSection />
-              <div className="subpage-bottom-actions">
-                <button
-                  className="subpage-back-pill"
-                  onClick={() => navigate("/")}
-                >
-                  <ArrowLeft size={16} /> العودة للصفحة الرئيسية
-                </button>
-              </div>
-            </>
-          )}
+      )}
 
-          {currentRoute === "/process" && (
-            <>
-              <div className="subpage-nav-bar">
-                <button
-                  className="subpage-back-link"
-                  onClick={() => navigate("/")}
-                >
-                  <ArrowLeft size={16} /> العودة للرئيسية
-                </button>
-                <span className="subpage-nav-crumb">/process • من الفكرة للكود</span>
-              </div>
-              <ProcessSection />
-              <div className="subpage-bottom-actions">
-                <button
-                  className="subpage-back-pill"
-                  onClick={() => navigate("/")}
-                >
-                  <ArrowLeft size={16} /> العودة للصفحة الرئيسية
-                </button>
-              </div>
-            </>
-          )}
+      {currentRoute === "/about" && (
+        <SubpageAbout onHome={() => navigate("/")} onNavigateContact={() => navigate("/contact")} />
+      )}
 
-          {currentRoute === "/projects" && (
-            <>
-              <div className="subpage-nav-bar">
-                <button
-                  className="subpage-back-link"
-                  onClick={() => navigate("/")}
-                >
-                  <ArrowLeft size={16} /> العودة للرئيسية
-                </button>
-                <span className="subpage-nav-crumb">/projects • المشاريع والأعمال</span>
-              </div>
-              <ProjectsSection
-                filter={filter}
-                setFilter={setFilter}
-                onNavigateContact={() => navigate("/contact")}
-              />
-              <div className="subpage-bottom-actions">
-                <button
-                  className="subpage-back-pill"
-                  onClick={() => navigate("/")}
-                >
-                  <ArrowLeft size={16} /> العودة للصفحة الرئيسية
-                </button>
-              </div>
-            </>
-          )}
+      {currentRoute === "/projects" && (
+        <SubpageProjects onHome={() => navigate("/")} />
+      )}
 
-          {currentRoute === "/contact" && (
-            <>
-              <div className="subpage-nav-bar">
-                <button
-                  className="subpage-back-link"
-                  onClick={() => navigate("/")}
-                >
-                  <ArrowLeft size={16} /> العودة للرئيسية
-                </button>
-                <span className="subpage-nav-crumb">/contact • عندك فكرة؟</span>
-              </div>
-              <ContactSection
-                form={form}
-                setForm={setForm}
-                sendEmail={sendEmail}
-                onHome={() => navigate("/")}
-              />
-              <div className="subpage-bottom-actions">
-                <button
-                  className="subpage-back-pill"
-                  onClick={() => navigate("/")}
-                >
-                  <ArrowLeft size={16} /> العودة للصفحة الرئيسية
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+      {currentRoute === "/process" && (
+        <SubpageProcess onHome={() => navigate("/")} onNavigateContact={() => navigate("/contact")} />
+      )}
+
+      {currentRoute === "/contact" && (
+        <SubpageContact onHome={() => navigate("/")} />
       )}
     </ClickSpark>
   );

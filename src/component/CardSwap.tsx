@@ -174,26 +174,26 @@ interface SwapApi {
 
 const THEMES: Record<"dark" | "light", Record<string, string>> = {
   dark: {
-    "--swap-tile": "linear-gradient(170deg, #27212f 0%, #15111d 100%)",
-    "--swap-tile-edge": "rgba(255, 255, 255, 0.12)",
-    "--swap-tile-highlight": "rgba(255, 255, 255, 0.2)",
+    "--swap-tile": "linear-gradient(170deg, #2D2424 0%, #191515 100%)",
+    "--swap-tile-edge": "rgba(74, 56, 53, 0.7)",
+    "--swap-tile-highlight": "rgba(255, 80, 60, 0.25)",
     "--swap-shadow":
-      "0 32px 64px -20px rgba(0, 0, 0, 0.85), 0 12px 28px -10px rgba(0, 0, 0, 0.6)",
-    "--swap-media-edge": "rgba(255, 255, 255, 0.08)",
-    "--swap-ink": "#f7f7fa",
-    "--swap-badge": "rgba(255, 255, 255, 0.12)",
-    "--swap-shade": "#0c0a10",
+      "0 32px 64px -20px rgba(0, 0, 0, 0.85), 0 12px 28px -10px rgba(255, 80, 60, 0.15)",
+    "--swap-media-edge": "rgba(255, 240, 229, 0.08)",
+    "--swap-ink": "#FFF0E5",
+    "--swap-badge": "rgba(56, 44, 43, 0.85)",
+    "--swap-shade": "#191515",
   },
   light: {
-    "--swap-tile": "linear-gradient(170deg, #ffffff 0%, #f6f7f4 100%)",
-    "--swap-tile-edge": "rgba(24, 24, 27, 0.1)",
+    "--swap-tile": "linear-gradient(170deg, #FFF0E5 0%, #F5E5D8 100%)",
+    "--swap-tile-edge": "rgba(74, 56, 53, 0.2)",
     "--swap-tile-highlight": "rgba(255, 255, 255, 1)",
     "--swap-shadow":
-      "0 30px 60px -28px rgba(24, 24, 27, 0.3), 0 10px 24px -14px rgba(24, 24, 27, 0.18)",
-    "--swap-media-edge": "rgba(24, 24, 27, 0.06)",
-    "--swap-ink": "#181d1a",
-    "--swap-badge": "rgba(24, 24, 27, 0.06)",
-    "--swap-shade": "#ffffff",
+      "0 30px 60px -28px rgba(25, 21, 21, 0.3), 0 10px 24px -14px rgba(25, 21, 21, 0.18)",
+    "--swap-media-edge": "rgba(74, 56, 53, 0.15)",
+    "--swap-ink": "#191515",
+    "--swap-badge": "rgba(255, 80, 60, 0.1)",
+    "--swap-shade": "#FFF0E5",
   },
 };
 

@@ -754,15 +754,15 @@ const paintFace = (
     // Role Tag Pill
     const pillW = 440;
     const pillH = 46;
-    ctx.fillStyle = 'rgba(0, 87, 255, 0.08)';
+    ctx.fillStyle = 'rgba(255, 80, 60, 0.12)';
     ctx.beginPath();
     ctx.roundRect((width - pillW) / 2, height * 0.80 - 23, pillW, pillH, 23);
     ctx.fill();
-    ctx.strokeStyle = '#0057ff';
+    ctx.strokeStyle = '#FF503C';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    ctx.fillStyle = '#0057ff';
+    ctx.fillStyle = '#FF503C';
     ctx.font = '800 20px Outfit, Inter, sans-serif';
     ctx.fillText('FULL-STACK & AI ENGINEER', width / 2, height * 0.80 + 7);
 
@@ -827,7 +827,7 @@ const paintFace = (
     ctx.font = '700 20px Outfit, sans-serif';
     ctx.fillText('SCAN TO CONNECT WITH ALI', width / 2, height * 0.77);
 
-    ctx.fillStyle = '#38bdf8';
+    ctx.fillStyle = '#FF503C';
     ctx.font = '600 18px "Space Mono", monospace';
     ctx.fillText('https://aloshstore.com', width / 2, height * 0.81);
 
